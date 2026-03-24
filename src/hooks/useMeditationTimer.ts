@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { Animated } from 'react-native';
 import { setAudioModeAsync } from 'expo-audio';
+import { activateKeepAwakeAsync, deactivateKeepAwakeAsync } from 'expo-keep-awake';
 import * as Haptics from 'expo-haptics';
 import { useChimePlayer } from './useChimePlayer';
 import { useFanfarePlayer } from './useFanfarePlayer';
@@ -40,7 +41,7 @@ export function useMeditationTimer(): MeditationTimer {
 
   async function configureAudio() {
     try {
-      await setAudioModeAsync({ playsInSilentMode: true });
+      await setAudioModeAsync({ playsInSilentMode: true, staysActiveInBackground: true });
     } catch {
       // audio is a nice-to-have
     }
@@ -77,6 +78,7 @@ export function useMeditationTimer(): MeditationTimer {
   }
 
   function stop() {
+    deactivateKeepAwakeAsync().catch(() => {});
     stopRef.current = true;
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
@@ -94,6 +96,7 @@ export function useMeditationTimer(): MeditationTimer {
 
   function beginMeditation(seconds: number) {
     if (stopRef.current) return;
+    activateKeepAwakeAsync().catch(() => {});
     setPrepMessage(null);
     setStatus('running');
 
@@ -109,6 +112,7 @@ export function useMeditationTimer(): MeditationTimer {
             clearTimeout(chimeTimeoutRef.current);
             chimeTimeoutRef.current = null;
           }
+          deactivateKeepAwakeAsync().catch(() => {});
           setStatus('done');
           playFanfare();
           Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});

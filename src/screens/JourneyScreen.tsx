@@ -22,6 +22,10 @@ const MOOD_EMOJI: Record<MoodValue, string> = {
   awful: '😩', bad: '😔', meh: '😐', good: '🙂', great: '😊', amazing: '🤩',
 };
 
+const MOOD_LABEL: Record<MoodValue, string> = {
+  awful: 'awful', bad: 'bad', meh: 'meh', good: 'good', great: 'great', amazing: 'amazing',
+};
+
 const calendarTheme = {
   calendarBackground: CARD_BG,
   textSectionTitleColor: TEXT_SECONDARY,
@@ -83,6 +87,13 @@ function formatStreakYear(dateKey: string): string {
   return dateKey.split('-')[0];
 }
 
+function mostCommon<T>(arr: T[]): T | null {
+  if (arr.length === 0) return null;
+  const counts = new Map<T, number>();
+  for (const item of arr) counts.set(item, (counts.get(item) ?? 0) + 1);
+  return [...counts.entries()].reduce((a, b) => b[1] > a[1] ? b : a)[0];
+}
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 type MarkedDay = {
@@ -103,6 +114,23 @@ export default function JourneyScreen() {
   const meditationSessions = useSessionStore((s) => s.meditationSessions);
 
   const streakData = useMemo(() => calculateStreaks(meditationSessions), [meditationSessions]);
+
+  const meditationStats = useMemo(() => {
+    const total = meditationSessions.length;
+    const totalMinutes = meditationSessions.reduce((sum, s) => sum + s.durationMinutes, 0);
+    const moods = meditationSessions.map((s) => s.postMood).filter((m): m is MoodValue => m !== null);
+    const commonMood = mostCommon(moods);
+    return { total, totalMinutes, commonMood };
+  }, [meditationSessions]);
+
+  const breathingStats = useMemo(() => {
+    const total = sessions.length;
+    const names = sessions.map((s) => s.exerciseName);
+    const topExercise = mostCommon(names);
+    const moods = sessions.map((s) => s.postExerciseMood).filter((m): m is MoodValue => m !== null);
+    const commonMood = mostCommon(moods);
+    return { total, topExercise, commonMood };
+  }, [sessions]);
 
   const [viewMode, setViewMode] = useState<'month' | 'day'>('month');
   const [selectedDate, setSelectedDate] = useState('');
@@ -295,6 +323,56 @@ export default function JourneyScreen() {
               <Text style={styles.legendLabel}>Breathing</Text>
             </View>
           </View>
+
+          {meditationSessions.length > 0 && (
+            <View style={styles.journeyCard}>
+              <Text style={styles.journeyTitle}>🧘 Meditation Journey</Text>
+              <Text style={styles.journeyBody}>
+                {'You\'ve meditated '}
+                <Text style={styles.journeyBold}>{meditationStats.total}</Text>
+                {meditationStats.total === 1 ? ' time' : ' times'}
+                {' for a total of '}
+                <Text style={styles.journeyBold}>{meditationStats.totalMinutes}</Text>
+                {meditationStats.totalMinutes === 1 ? ' minute.' : ' minutes.'}
+              </Text>
+              {meditationStats.commonMood !== null && (
+                <Text style={styles.journeyBody}>
+                  {'You usually feel '}
+                  <Text style={styles.journeyBold}>{MOOD_LABEL[meditationStats.commonMood]}</Text>
+                  {' '}
+                  {MOOD_EMOJI[meditationStats.commonMood]}
+                  {' after meditating.'}
+                </Text>
+              )}
+            </View>
+          )}
+
+          {sessions.length > 0 && (
+            <View style={styles.journeyCard}>
+              <Text style={styles.journeyTitle}>🌬️ Breathing Journey</Text>
+              <Text style={styles.journeyBody}>
+                {'You\'ve done '}
+                <Text style={styles.journeyBold}>{breathingStats.total}</Text>
+                {breathingStats.total === 1 ? ' breathing exercise.' : ' breathing exercises.'}
+              </Text>
+              {breathingStats.topExercise !== null && (
+                <Text style={styles.journeyBody}>
+                  {'Your go-to exercise is '}
+                  <Text style={styles.journeyBold}>{breathingStats.topExercise}</Text>
+                  {'.'}
+                </Text>
+              )}
+              {breathingStats.commonMood !== null && (
+                <Text style={styles.journeyBody}>
+                  {'You usually feel '}
+                  <Text style={styles.journeyBold}>{MOOD_LABEL[breathingStats.commonMood]}</Text>
+                  {' '}
+                  {MOOD_EMOJI[breathingStats.commonMood]}
+                  {' after a breathing exercise.'}
+                </Text>
+              )}
+            </View>
+          )}
         </ScrollView>
       )}
     </SafeAreaView>
@@ -484,5 +562,32 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     marginTop: 4,
     textAlign: 'center',
+  },
+  // Journey summary cards
+  journeyCard: {
+    marginHorizontal: 16,
+    marginTop: 16,
+    backgroundColor: CARD_BG,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: BORDER,
+    paddingVertical: 18,
+    paddingHorizontal: 18,
+    gap: 8,
+  },
+  journeyTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: TEXT_PRIMARY,
+    marginBottom: 4,
+  },
+  journeyBody: {
+    fontSize: 15,
+    color: TEXT_SECONDARY,
+    lineHeight: 22,
+  },
+  journeyBold: {
+    fontWeight: '700',
+    color: TEXT_PRIMARY,
   },
 });
