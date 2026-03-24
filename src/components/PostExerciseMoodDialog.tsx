@@ -1,5 +1,6 @@
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import type { MoodValue } from '../types/breathing';
+import { colors } from '../theme';
 
 type MoodOption = {
   value: MoodValue;
@@ -53,19 +54,19 @@ export default function PostExerciseMoodDialog({ visible, accentColor, onSelect,
 const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.4)',
+    backgroundColor: colors.modalBackdrop,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 24,
   },
   card: {
-    backgroundColor: '#FFFDF9',
+    backgroundColor: colors.card,
     borderRadius: 20,
     paddingVertical: 28,
     paddingHorizontal: 24,
     width: '100%',
     alignItems: 'center',
-    shadowColor: '#000',
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.12,
     shadowRadius: 16,
@@ -74,7 +75,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#1A1A2E',
+    color: colors.textPrimary,
     marginBottom: 24,
     textAlign: 'center',
   },
@@ -91,7 +92,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 8,
     borderRadius: 14,
-    backgroundColor: '#F7F5F2',
+    backgroundColor: colors.background,
   },
   moodEmoji: {
     fontSize: 32,
@@ -100,11 +101,11 @@ const styles = StyleSheet.create({
   moodLabel: {
     fontSize: 13,
     fontWeight: '500',
-    color: '#444',
+    color: colors.textDark,
   },
   skipText: {
     fontSize: 15,
-    color: '#999',
+    color: colors.textFaint,
     fontWeight: '500',
   },
 });

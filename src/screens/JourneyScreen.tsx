@@ -5,18 +5,12 @@ import { Calendar } from 'react-native-calendars';
 import { useSessionStore } from '../store/sessionStore';
 import type { MoodValue, SessionLog, MeditationLog } from '../types/breathing';
 import { calculateStreaks, toLocalDateKey } from '../utils/streaks';
+import { colors } from '../theme';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const ACCENT = '#7B68B5';
-const BG = '#F7F5F2';
-const CARD_BG = '#FFFDF9';
-const BORDER = '#E7E1D8';
-const TEXT_PRIMARY = '#1A1A2E';
-const TEXT_SECONDARY = '#6F6B66';
-
-const DOT_MEDITATION = { key: 'meditation', color: '#4CAF50' };
-const DOT_BREATHING = { key: 'breathing', color: '#F9A825' };
+const DOT_MEDITATION = { key: 'meditation', color: colors.dotMeditation };
+const DOT_BREATHING = { key: 'breathing', color: colors.dotBreathing };
 
 const MOOD_EMOJI: Record<MoodValue, string> = {
   awful: '😩', bad: '😔', meh: '😐', good: '🙂', great: '😊', amazing: '🤩',
@@ -27,15 +21,15 @@ const MOOD_LABEL: Record<MoodValue, string> = {
 };
 
 const calendarTheme = {
-  calendarBackground: CARD_BG,
-  textSectionTitleColor: TEXT_SECONDARY,
-  selectedDayBackgroundColor: ACCENT,
-  selectedDayTextColor: '#fff',
-  todayTextColor: ACCENT,
-  dayTextColor: TEXT_PRIMARY,
-  textDisabledColor: '#C8C2BA',
-  arrowColor: ACCENT,
-  monthTextColor: TEXT_PRIMARY,
+  calendarBackground: colors.card,
+  textSectionTitleColor: colors.textSecondary,
+  selectedDayBackgroundColor: colors.accent,
+  selectedDayTextColor: colors.white,
+  todayTextColor: colors.accent,
+  dayTextColor: colors.textPrimary,
+  textDisabledColor: colors.borderLight,
+  arrowColor: colors.accent,
+  monthTextColor: colors.textPrimary,
   textMonthFontWeight: '700' as const,
   textDayHeaderFontWeight: '600' as const,
   textDayFontSize: 15,
@@ -165,7 +159,7 @@ export default function JourneyScreen() {
     }
 
     const today = toLocalDateKey(new Date().toISOString());
-    result[today] = { ...result[today], selected: true, selectedColor: ACCENT };
+    result[today] = { ...result[today], selected: true, selectedColor: colors.accent };
 
     return result;
   }, [sessions, meditationSessions]);
@@ -384,7 +378,7 @@ export default function JourneyScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: BG,
+    backgroundColor: colors.background,
   },
   // Month view
   header: {
@@ -395,7 +389,7 @@ const styles = StyleSheet.create({
   screenTitle: {
     fontSize: 28,
     fontWeight: '700',
-    color: TEXT_PRIMARY,
+    color: colors.textPrimary,
   },
   scroll: {
     paddingBottom: 40,
@@ -403,10 +397,10 @@ const styles = StyleSheet.create({
   calendarCard: {
     marginHorizontal: 16,
     marginTop: 8,
-    backgroundColor: CARD_BG,
+    backgroundColor: colors.card,
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: BORDER,
+    borderColor: colors.border,
     overflow: 'hidden',
   },
   legendRow: {
@@ -427,7 +421,7 @@ const styles = StyleSheet.create({
   },
   legendLabel: {
     fontSize: 13,
-    color: TEXT_SECONDARY,
+    color: colors.textSecondary,
     fontWeight: '500',
   },
   // Empty state
@@ -439,13 +433,13 @@ const styles = StyleSheet.create({
   },
   emptyCard: {
     width: '100%',
-    backgroundColor: CARD_BG,
+    backgroundColor: colors.card,
     borderRadius: 28,
     paddingVertical: 40,
     paddingHorizontal: 28,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: BORDER,
+    borderColor: colors.border,
   },
   emptyEmoji: {
     fontSize: 48,
@@ -454,14 +448,14 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: 22,
     fontWeight: '700',
-    color: TEXT_PRIMARY,
+    color: colors.textPrimary,
     marginBottom: 10,
   },
   emptyDesc: {
     fontSize: 15,
     lineHeight: 22,
     textAlign: 'center',
-    color: TEXT_SECONDARY,
+    color: colors.textSecondary,
   },
   // Day view
   dayHeader: {
@@ -469,25 +463,25 @@ const styles = StyleSheet.create({
     paddingTop: 16,
     paddingBottom: 14,
     borderBottomWidth: 1,
-    borderBottomColor: BORDER,
+    borderBottomColor: colors.border,
   },
   backText: {
     fontSize: 16,
-    color: ACCENT,
+    color: colors.accent,
     fontWeight: '600',
     marginBottom: 6,
   },
   dayTitle: {
     fontSize: 22,
     fontWeight: '700',
-    color: TEXT_PRIMARY,
+    color: colors.textPrimary,
   },
   sessionCard: {
     flexDirection: 'row',
-    backgroundColor: CARD_BG,
+    backgroundColor: colors.card,
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: BORDER,
+    borderColor: colors.border,
     marginHorizontal: 16,
     marginVertical: 6,
     overflow: 'hidden',
@@ -504,19 +498,19 @@ const styles = StyleSheet.create({
   },
   sessionTime: {
     fontSize: 13,
-    color: TEXT_SECONDARY,
+    color: colors.textSecondary,
     fontWeight: '500',
     marginBottom: 3,
   },
   sessionTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: TEXT_PRIMARY,
+    color: colors.textPrimary,
     marginBottom: 2,
   },
   sessionDuration: {
     fontSize: 13,
-    color: TEXT_SECONDARY,
+    color: colors.textSecondary,
   },
   sessionMood: {
     fontSize: 24,
@@ -532,10 +526,10 @@ const styles = StyleSheet.create({
   },
   statCard: {
     flex: 1,
-    backgroundColor: CARD_BG,
+    backgroundColor: colors.card,
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: BORDER,
+    borderColor: colors.border,
     paddingVertical: 16,
     paddingHorizontal: 12,
     alignItems: 'center',
@@ -547,18 +541,18 @@ const styles = StyleSheet.create({
   statNumber: {
     fontSize: 32,
     fontWeight: '700',
-    color: TEXT_PRIMARY,
+    color: colors.textPrimary,
     lineHeight: 36,
   },
   statLabel: {
     fontSize: 12,
     fontWeight: '500',
-    color: TEXT_SECONDARY,
+    color: colors.textSecondary,
     marginTop: 2,
   },
   statDateRange: {
     fontSize: 11,
-    color: ACCENT,
+    color: colors.accent,
     fontWeight: '500',
     marginTop: 4,
     textAlign: 'center',
@@ -567,10 +561,10 @@ const styles = StyleSheet.create({
   journeyCard: {
     marginHorizontal: 16,
     marginTop: 16,
-    backgroundColor: CARD_BG,
+    backgroundColor: colors.card,
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: BORDER,
+    borderColor: colors.border,
     paddingVertical: 18,
     paddingHorizontal: 18,
     gap: 8,
@@ -578,16 +572,16 @@ const styles = StyleSheet.create({
   journeyTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: TEXT_PRIMARY,
+    color: colors.textPrimary,
     marginBottom: 4,
   },
   journeyBody: {
     fontSize: 15,
-    color: TEXT_SECONDARY,
+    color: colors.textSecondary,
     lineHeight: 22,
   },
   journeyBold: {
     fontWeight: '700',
-    color: TEXT_PRIMARY,
+    color: colors.textPrimary,
   },
 });

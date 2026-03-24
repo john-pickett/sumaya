@@ -1,4 +1,5 @@
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { colors } from '../theme';
 
 type Props = {
   visible: boolean;
@@ -70,15 +71,15 @@ const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
     justifyContent: 'flex-end',
-    backgroundColor: 'rgba(0,0,0,0.45)',
+    backgroundColor: colors.modalBackdrop,
   },
   card: {
-    backgroundColor: '#FFFDF9',
+    backgroundColor: colors.card,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     height: '88%',
     paddingBottom: 40,
-    shadowColor: '#000',
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: -2 },
     shadowOpacity: 0.1,
     shadowRadius: 12,
@@ -88,7 +89,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 4,
     borderRadius: 2,
-    backgroundColor: '#C8C2BA',
+    backgroundColor: colors.borderLight,
     alignSelf: 'center',
     marginTop: 12,
     marginBottom: 4,
@@ -100,16 +101,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#E7E1D8',
+    borderBottomColor: colors.border,
   },
   title: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#1A1A2E',
+    color: colors.textPrimary,
   },
   closeBtn: {
     fontSize: 18,
-    color: '#6F6B66',
+    color: colors.textSecondary,
     fontWeight: '500',
   },
   scrollView: {
@@ -125,12 +126,12 @@ const styles = StyleSheet.create({
   sectionHeading: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#1A1A2E',
+    color: colors.textPrimary,
     marginBottom: 8,
   },
   sectionBody: {
     fontSize: 15,
-    color: '#6F6B66',
+    color: colors.textSecondary,
     lineHeight: 23,
   },
   closingNote: {

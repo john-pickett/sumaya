@@ -5,13 +5,7 @@ import { useSettingsStore } from '../store/settingsStore';
 import { useChimePlayer, CHIME_OPTIONS } from '../hooks/useChimePlayer';
 import { useFanfarePlayer, FANFARE_OPTIONS } from '../hooks/useFanfarePlayer';
 import type { ChimeId, FanfareId } from '../types/breathing';
-
-const ACCENT = '#7B68B5';
-const BG = '#F7F5F2';
-const CARD_BG = '#FFFDF9';
-const BORDER = '#E7E1D8';
-const TEXT_PRIMARY = '#1A1A2E';
-const TEXT_SECONDARY = '#6F6B66';
+import { colors } from '../theme';
 
 type SubScreen = 'main' | 'chime' | 'fanfare';
 
@@ -175,7 +169,7 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: BG,
+    backgroundColor: colors.background,
   },
   scroll: {
     paddingBottom: 48,
@@ -189,7 +183,7 @@ const styles = StyleSheet.create({
   screenTitle: {
     fontSize: 28,
     fontWeight: '700',
-    color: TEXT_PRIMARY,
+    color: colors.textPrimary,
   },
   // Sub-screen header
   subHeader: {
@@ -197,24 +191,24 @@ const styles = StyleSheet.create({
     paddingTop: 16,
     paddingBottom: 14,
     borderBottomWidth: 1,
-    borderBottomColor: BORDER,
+    borderBottomColor: colors.border,
   },
   backText: {
     fontSize: 16,
-    color: ACCENT,
+    color: colors.accent,
     fontWeight: '600',
     marginBottom: 6,
   },
   subTitle: {
     fontSize: 22,
     fontWeight: '700',
-    color: TEXT_PRIMARY,
+    color: colors.textPrimary,
   },
   // Section label
   sectionLabel: {
     fontSize: 12,
     fontWeight: '600',
-    color: TEXT_SECONDARY,
+    color: colors.textSecondary,
     letterSpacing: 0.8,
     marginHorizontal: 20,
     marginTop: 20,
@@ -223,15 +217,15 @@ const styles = StyleSheet.create({
   // Shared card
   card: {
     marginHorizontal: 16,
-    backgroundColor: CARD_BG,
+    backgroundColor: colors.card,
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: BORDER,
+    borderColor: colors.border,
     overflow: 'hidden',
   },
   divider: {
     height: 1,
-    backgroundColor: BORDER,
+    backgroundColor: colors.border,
     marginLeft: 52,
   },
   // Main screen preference rows
@@ -245,7 +239,7 @@ const styles = StyleSheet.create({
   prefLabel: {
     fontSize: 16,
     fontWeight: '500',
-    color: TEXT_PRIMARY,
+    color: colors.textPrimary,
   },
   prefRight: {
     flexDirection: 'row',
@@ -254,11 +248,11 @@ const styles = StyleSheet.create({
   },
   prefValue: {
     fontSize: 15,
-    color: TEXT_SECONDARY,
+    color: colors.textSecondary,
   },
   chevron: {
     fontSize: 20,
-    color: TEXT_SECONDARY,
+    color: colors.textSecondary,
     lineHeight: 22,
   },
   // Option list rows (sub-screens)
@@ -269,26 +263,26 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   optionRowSelected: {
-    backgroundColor: ACCENT + '12',
+    backgroundColor: colors.accent + '12',
   },
   radio: {
     width: 22,
     height: 22,
     borderRadius: 11,
     borderWidth: 2,
-    borderColor: '#C8C2BA',
+    borderColor: colors.borderLight,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 14,
   },
   radioSelected: {
-    borderColor: ACCENT,
+    borderColor: colors.accent,
   },
   radioDot: {
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: ACCENT,
+    backgroundColor: colors.accent,
   },
   optionText: {
     flex: 1,
@@ -296,16 +290,16 @@ const styles = StyleSheet.create({
   optionName: {
     fontSize: 16,
     fontWeight: '500',
-    color: TEXT_PRIMARY,
+    color: colors.textPrimary,
     marginBottom: 2,
   },
   optionNameSelected: {
     fontWeight: '600',
-    color: ACCENT,
+    color: colors.accent,
   },
   optionDesc: {
     fontSize: 13,
-    color: TEXT_SECONDARY,
+    color: colors.textSecondary,
   },
   playButton: {
     paddingHorizontal: 10,
@@ -313,9 +307,9 @@ const styles = StyleSheet.create({
   },
   playIcon: {
     fontSize: 14,
-    color: '#C8C2BA',
+    color: colors.borderLight,
   },
   playIconSelected: {
-    color: ACCENT,
+    color: colors.accent,
   },
 });

@@ -8,8 +8,8 @@ import HowToMeditateModal from '../components/HowToMeditateModal';
 import { useSessionStore } from '../store/sessionStore';
 import type { MoodValue } from '../types/breathing';
 import { calculateStreaks } from '../utils/streaks';
-
-const ACCENT = '#7B68B5';
+import { colors } from '../theme';
+const ACCENT = colors.accent;
 const DURATION_OPTIONS = [2, 5, 10, 15, 20, 30];
 
 const ARC_RADIUS = 130;
@@ -102,7 +102,7 @@ export default function MeditateScreen() {
                   cx={ARC_CENTER}
                   cy={ARC_CENTER}
                   r={ARC_RADIUS}
-                  stroke="#E7E1D8"
+                  stroke={colors.border}
                   strokeWidth={STROKE_WIDTH}
                   fill="none"
                 />
@@ -181,7 +181,7 @@ export default function MeditateScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F7F5F2',
+    backgroundColor: colors.background,
   },
   body: {
     flex: 1,
@@ -201,11 +201,11 @@ const styles = StyleSheet.create({
   screenTitle: {
     fontSize: 28,
     fontWeight: '700',
-    color: '#1A1A2E',
+    color: colors.textPrimary,
   },
   infoBtnText: {
     fontSize: 24,
-    color: '#6F6B66',
+    color: colors.textSecondary,
     lineHeight: 28,
   },
   // idle
@@ -213,19 +213,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 20,
-    backgroundColor: '#FFFDF9',
+    backgroundColor: colors.card,
     borderWidth: 1.5,
-    borderColor: '#E7E1D8',
+    borderColor: colors.border,
     marginBottom: 28,
   },
   streakBadgeText: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#1A1A2E',
+    color: colors.textPrimary,
   },
   label: {
     fontSize: 16,
-    color: '#6F6B66',
+    color: colors.textSecondary,
     marginBottom: 16,
   },
   durationRow: {
@@ -240,16 +240,16 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 24,
     borderWidth: 1.5,
-    borderColor: '#C8C2BA',
-    backgroundColor: '#FFFDF9',
+    borderColor: colors.borderLight,
+    backgroundColor: colors.card,
   },
   durationText: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#6F6B66',
+    color: colors.textSecondary,
   },
   durationTextActive: {
-    color: '#fff',
+    color: colors.white,
   },
   startButton: {
     paddingHorizontal: 56,
@@ -259,7 +259,7 @@ const styles = StyleSheet.create({
   startButtonText: {
     fontSize: 17,
     fontWeight: '700',
-    color: '#fff',
+    color: colors.white,
     letterSpacing: 0.3,
   },
   // running
@@ -278,7 +278,7 @@ const styles = StyleSheet.create({
   countdown: {
     fontSize: 52,
     fontWeight: '200',
-    color: '#1A1A2E',
+    color: colors.textPrimary,
     fontVariant: ['tabular-nums'],
     letterSpacing: 2,
   },
@@ -286,7 +286,7 @@ const styles = StyleSheet.create({
     marginTop: 36,
     fontSize: 20,
     fontWeight: '500',
-    color: '#6F6B66',
+    color: colors.textSecondary,
     fontStyle: 'italic',
   },
   // done
@@ -297,12 +297,12 @@ const styles = StyleSheet.create({
   doneHeading: {
     fontSize: 32,
     fontWeight: '700',
-    color: '#1A1A2E',
+    color: colors.textPrimary,
     marginBottom: 12,
   },
   doneSubtext: {
     fontSize: 16,
-    color: '#666',
+    color: colors.textMid,
     textAlign: 'center',
     lineHeight: 24,
     marginBottom: 40,

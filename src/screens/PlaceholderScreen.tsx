@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { colors } from '../theme';
 
 type Props = {
   emoji: string;
@@ -22,7 +23,7 @@ export default function PlaceholderScreen({ emoji, title, description }: Props) 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F7F5F2',
+    backgroundColor: colors.background,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 24,
@@ -30,13 +31,13 @@ const styles = StyleSheet.create({
   card: {
     width: '100%',
     maxWidth: 360,
-    backgroundColor: '#FFFDF9',
+    backgroundColor: colors.card,
     borderRadius: 28,
     paddingVertical: 40,
     paddingHorizontal: 28,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#E7E1D8',
+    borderColor: colors.border,
   },
   emoji: {
     fontSize: 52,
@@ -45,13 +46,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 30,
     fontWeight: '700',
-    color: '#1A1A2E',
+    color: colors.textPrimary,
     marginBottom: 10,
   },
   description: {
     fontSize: 16,
     lineHeight: 24,
     textAlign: 'center',
-    color: '#6F6B66',
+    color: colors.textSecondary,
   },
 });

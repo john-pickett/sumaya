@@ -1,5 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import type { Exercise } from '../types/breathing';
+import { colors } from '../theme';
 
 type Props = {
   exercise: Exercise;
@@ -34,7 +35,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     marginHorizontal: 20,
     marginVertical: 8,
-    shadowColor: '#000',
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.06,
     shadowRadius: 6,
@@ -60,18 +61,18 @@ const styles = StyleSheet.create({
   emotion: {
     fontSize: 17,
     fontWeight: '600',
-    color: '#1A1A2E',
+    color: colors.textPrimary,
     flexShrink: 1,
   },
   name: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#444',
+    color: colors.textDark,
     marginBottom: 4,
   },
   description: {
     fontSize: 13,
-    color: '#666',
+    color: colors.textMid,
     lineHeight: 18,
   },
 });

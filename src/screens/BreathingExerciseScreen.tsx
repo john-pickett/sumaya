@@ -6,6 +6,7 @@ import BreathingShape from '../components/BreathingShape';
 import PostExerciseMoodDialog from '../components/PostExerciseMoodDialog';
 import { useSessionStore } from '../store/sessionStore';
 import type { Exercise, MoodValue } from '../types/breathing';
+import { colors } from '../theme';
 
 type Props = {
   exercise: Exercise;
@@ -121,7 +122,7 @@ const styles = StyleSheet.create({
   },
   backText: {
     fontSize: 16,
-    color: '#444',
+    color: colors.textDark,
     fontWeight: '500',
   },
   body: {
@@ -133,7 +134,7 @@ const styles = StyleSheet.create({
   exerciseName: {
     fontSize: 20,
     fontWeight: '600',
-    color: '#1A1A2E',
+    color: colors.textPrimary,
     marginBottom: 48,
     letterSpacing: 0.3,
   },
@@ -156,23 +157,23 @@ const styles = StyleSheet.create({
   phaseLabel: {
     fontSize: 28,
     fontWeight: '600',
-    color: '#1A1A2E',
+    color: colors.textPrimary,
     marginBottom: 8,
     letterSpacing: 0.5,
   },
   phaseSecs: {
     fontSize: 18,
-    color: '#888',
+    color: colors.textMuted,
     fontVariant: ['tabular-nums'],
     marginBottom: 20,
   },
   cyclesRemaining: {
     fontSize: 15,
-    color: '#888',
+    color: colors.textMuted,
   },
   startingText: {
     fontSize: 18,
-    color: '#888',
+    color: colors.textMuted,
     fontStyle: 'italic',
   },
   // done screen
@@ -183,12 +184,12 @@ const styles = StyleSheet.create({
   doneHeading: {
     fontSize: 32,
     fontWeight: '700',
-    color: '#1A1A2E',
+    color: colors.textPrimary,
     marginBottom: 12,
   },
   doneSubtext: {
     fontSize: 16,
-    color: '#666',
+    color: colors.textMid,
     textAlign: 'center',
     marginHorizontal: 40,
     lineHeight: 24,
@@ -202,6 +203,6 @@ const styles = StyleSheet.create({
   doneButtonText: {
     fontSize: 17,
     fontWeight: '600',
-    color: '#fff',
+    color: colors.white,
   },
 });

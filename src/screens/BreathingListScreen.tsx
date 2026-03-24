@@ -3,6 +3,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import data from '../data/breathing.json';
 import ExerciseCard from '../components/ExerciseCard';
 import type { Exercise } from '../types/breathing';
+import { colors } from '../theme';
 
 type Props = {
   onSelectExercise: (exercise: Exercise) => void;
@@ -31,7 +32,7 @@ export default function BreathingListScreen({ onSelectExercise }: Props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F7F5F2',
+    backgroundColor: colors.background,
   },
   scroll: {
     paddingTop: 28,
@@ -40,13 +41,13 @@ const styles = StyleSheet.create({
   heading: {
     fontSize: 28,
     fontWeight: '700',
-    color: '#1A1A2E',
+    color: colors.textPrimary,
     marginHorizontal: 20,
     marginBottom: 6,
   },
   subheading: {
     fontSize: 15,
-    color: '#888',
+    color: colors.textMuted,
     marginHorizontal: 20,
     marginBottom: 20,
   },
