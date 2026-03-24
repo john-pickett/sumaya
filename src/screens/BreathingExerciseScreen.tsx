@@ -1,8 +1,11 @@
+import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useBreathingAnimation } from '../hooks/useBreathingAnimation';
 import BreathingShape from '../components/BreathingShape';
-import type { Exercise } from '../types/breathing';
+import PostExerciseMoodDialog from '../components/PostExerciseMoodDialog';
+import { useSessionStore } from '../store/sessionStore';
+import type { Exercise, MoodValue } from '../types/breathing';
 
 type Props = {
   exercise: Exercise;
@@ -13,7 +16,38 @@ export default function BreathingExerciseScreen({ exercise, onBack }: Props) {
   const { scale, status, countdownLabel, currentPhaseLabel, secondsRemaining, cyclesRemaining } =
     useBreathingAnimation(exercise);
 
+  const logSession = useSessionStore((s) => s.logSession);
+  const [dialogVisible, setDialogVisible] = useState(false);
+
   const cycleWord = cyclesRemaining === 1 ? 'cycle' : 'cycles';
+
+  useEffect(() => {
+    if (status === 'done') {
+      setDialogVisible(true);
+    }
+  }, [status]);
+
+  function handleMoodSelect(mood: MoodValue) {
+    logSession({
+      completedAt: new Date().toISOString(),
+      exerciseId: exercise.id,
+      exerciseName: exercise.name,
+      exerciseEmotion: exercise.emotion,
+      postExerciseMood: mood,
+    });
+    setDialogVisible(false);
+  }
+
+  function handleSkip() {
+    logSession({
+      completedAt: new Date().toISOString(),
+      exerciseId: exercise.id,
+      exerciseName: exercise.name,
+      exerciseEmotion: exercise.emotion,
+      postExerciseMood: null,
+    });
+    setDialogVisible(false);
+  }
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: exercise.color + '18' }]}>
@@ -64,6 +98,13 @@ export default function BreathingExerciseScreen({ exercise, onBack }: Props) {
           )}
         </View>
       )}
+
+      <PostExerciseMoodDialog
+        visible={dialogVisible}
+        accentColor={exercise.color}
+        onSelect={handleMoodSelect}
+        onSkip={handleSkip}
+      />
     </SafeAreaView>
   );
 }

@@ -16,3 +16,14 @@ export type Exercise = {
   phases: Phase[];
   length: number;
 };
+
+export type MoodValue = 'awful' | 'bad' | 'meh' | 'good' | 'great' | 'amazing';
+
+export type SessionLog = {
+  id: string;
+  completedAt: string;
+  exerciseId: string;
+  exerciseName: string;
+  exerciseEmotion: string;
+  postExerciseMood: MoodValue | null;
+};
