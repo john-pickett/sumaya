@@ -133,11 +133,13 @@ export default function MeditateScreen() {
   // idle
   return (
     <SafeAreaView style={styles.container}>
-      <Pressable style={styles.infoBtn} onPress={() => setInfoVisible(true)} hitSlop={16}>
-        <Text style={styles.infoBtnText}>ⓘ</Text>
-      </Pressable>
+      <View style={styles.header}>
+        <Text style={styles.screenTitle}>Meditate</Text>
+        <Pressable onPress={() => setInfoVisible(true)} hitSlop={16}>
+          <Text style={styles.infoBtnText}>ⓘ</Text>
+        </Pressable>
+      </View>
       <View style={styles.body}>
-        <Text style={styles.title}>Meditate</Text>
         <View style={styles.streakBadge}>
           <Text style={styles.streakBadgeText}>
             {currentStreak > 0
@@ -188,16 +190,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingBottom: 40,
   },
-  // info button
-  infoBtn: {
-    position: 'absolute',
-    top: 16,
-    right: 20,
-    zIndex: 1,
-    width: 36,
-    height: 36,
+  header: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 8,
+  },
+  screenTitle: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: '#1A1A2E',
   },
   infoBtnText: {
     fontSize: 24,
@@ -205,12 +209,6 @@ const styles = StyleSheet.create({
     lineHeight: 28,
   },
   // idle
-  title: {
-    fontSize: 30,
-    fontWeight: '700',
-    color: '#1A1A2E',
-    marginBottom: 12,
-  },
   streakBadge: {
     paddingHorizontal: 16,
     paddingVertical: 8,

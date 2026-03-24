@@ -38,8 +38,8 @@ const CLOSING_NOTE =
 export default function HowToMeditateModal({ visible, onClose }: Props) {
   return (
     <Modal visible={visible} transparent animationType="slide">
-      <Pressable style={styles.backdrop} onPress={onClose}>
-        <Pressable style={styles.card} onPress={() => {}}>
+      <View style={styles.backdrop}>
+        <View style={styles.card}>
           <View style={styles.handle} />
           <View style={styles.header}>
             <Text style={styles.title}>📖 How to Meditate</Text>
@@ -48,6 +48,7 @@ export default function HowToMeditateModal({ visible, onClose }: Props) {
             </Pressable>
           </View>
           <ScrollView
+            style={styles.scrollView}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.scroll}
           >
@@ -59,8 +60,8 @@ export default function HowToMeditateModal({ visible, onClose }: Props) {
             ))}
             <Text style={[styles.sectionBody, styles.closingNote]}>{CLOSING_NOTE}</Text>
           </ScrollView>
-        </Pressable>
-      </Pressable>
+        </View>
+      </View>
     </Modal>
   );
 }
@@ -75,7 +76,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFDF9',
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
-    maxHeight: '90%',
+    height: '88%',
     paddingBottom: 40,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: -2 },
@@ -110,6 +111,9 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#6F6B66',
     fontWeight: '500',
+  },
+  scrollView: {
+    flex: 1,
   },
   scroll: {
     paddingHorizontal: 20,

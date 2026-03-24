@@ -21,7 +21,7 @@ const tabs: { key: TabKey; label: string; icon: string }[] = [
 
 export default function App() {
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
-  const [activeTab, setActiveTab] = useState<TabKey>('breathe');
+  const [activeTab, setActiveTab] = useState<TabKey>('meditate');
 
   function renderCurrentTab() {
     switch (activeTab) {
