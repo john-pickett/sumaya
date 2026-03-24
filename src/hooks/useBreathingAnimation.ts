@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Animated, Easing } from 'react-native';
-import { Audio } from 'expo-av';
+import { setAudioModeAsync, useAudioPlayer } from 'expo-audio';
 import * as Haptics from 'expo-haptics';
 import type { Exercise } from '../types/breathing';
 
@@ -24,6 +24,7 @@ function targetScale(label: string): number {
 
 export function useBreathingAnimation(exercise: Exercise): BreathingAnimation {
   const scale = useRef(new Animated.Value(0.4)).current;
+  const chimePlayer = useAudioPlayer(require('../../assets/sounds/chime.mp3'));
   const [status, setStatus] = useState<ExerciseStatus>('countdown');
   const [countdownLabel, setCountdownLabel] = useState('2');
   const [currentPhaseLabel, setCurrentPhaseLabel] = useState(exercise.phases[0].label);
@@ -31,21 +32,16 @@ export function useBreathingAnimation(exercise: Exercise): BreathingAnimation {
   const [cyclesRemaining, setCyclesRemaining] = useState(exercise.length);
 
   const stopRef = useRef(false);
-  const soundRef = useRef<Audio.Sound | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const timeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   useEffect(() => {
     stopRef.current = false;
+    chimePlayer.volume = 0.6;
 
-    async function loadSound() {
+    async function configureAudio() {
       try {
-        await Audio.setAudioModeAsync({ playsInSilentModeIOS: true });
-        const { sound } = await Audio.Sound.createAsync(
-          require('../../assets/sounds/chime.mp3'),
-          { shouldPlay: false, volume: 0.6 },
-        );
-        soundRef.current = sound;
+        await setAudioModeAsync({ playsInSilentMode: true });
       } catch {
         // audio is a nice-to-have; silently continue without it
       }
@@ -53,10 +49,8 @@ export function useBreathingAnimation(exercise: Exercise): BreathingAnimation {
 
     async function playChime() {
       try {
-        if (soundRef.current) {
-          await soundRef.current.setPositionAsync(0);
-          await soundRef.current.playAsync();
-        }
+        await chimePlayer.seekTo(0);
+        chimePlayer.play();
       } catch {
         // ignore playback errors
       }
@@ -132,7 +126,7 @@ export function useBreathingAnimation(exercise: Exercise): BreathingAnimation {
     scheduleTimeout(() => {
       if (stopRef.current) return;
       setStatus('running');
-      loadSound().then(() => {
+      configureAudio().then(() => {
         if (!stopRef.current) runPhase(0, exercise.length);
       });
     }, 3000);
@@ -143,9 +137,8 @@ export function useBreathingAnimation(exercise: Exercise): BreathingAnimation {
       timeoutsRef.current.forEach(clearTimeout);
       timeoutsRef.current = [];
       scale.stopAnimation();
-      soundRef.current?.unloadAsync().catch(() => {});
     };
-  }, [exercise.id]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [chimePlayer, exercise.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return { scale, status, countdownLabel, currentPhaseLabel, secondsRemaining, cyclesRemaining };
 }
