@@ -1,12 +1,18 @@
 {
   "name": "meditation",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "main": "index.ts",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "bump": "node bump-version.js && npm run commit:version",
+    "bump:minor": "node bump-version.js minor && npm run commit:version",
+    "bump:major": "node bump-version.js major && npm run commit:version",
+    "build:ios": "npm run bump && eas build --platform ios --local",
+    "build:android": "eas build --platform android --local",
+    "commit:version": "git add package.json app.json && git commit -m \"chore: bump to $(node -p \"require('./package.json').version\")\""
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "2.2.0",
