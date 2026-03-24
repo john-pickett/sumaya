@@ -1,4 +1,5 @@
-import { SafeAreaView, ScrollView, StyleSheet, Text } from 'react-native';
+import { ScrollView, StyleSheet, Text } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import data from '../data/breathing.json';
 import ExerciseCard from '../components/ExerciseCard';
 import type { Exercise } from '../types/breathing';

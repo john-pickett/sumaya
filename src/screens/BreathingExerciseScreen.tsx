@@ -1,4 +1,5 @@
-import { Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useBreathingAnimation } from '../hooks/useBreathingAnimation';
 import BreathingShape from '../components/BreathingShape';
 import type { Exercise } from '../types/breathing';
