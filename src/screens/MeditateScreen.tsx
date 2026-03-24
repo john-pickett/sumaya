@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Circle } from 'react-native-svg';
 import { useMeditationTimer } from '../hooks/useMeditationTimer';
 import PostExerciseMoodDialog from '../components/PostExerciseMoodDialog';
+import HowToMeditateModal from '../components/HowToMeditateModal';
 import { useSessionStore } from '../store/sessionStore';
 import type { MoodValue } from '../types/breathing';
 import { calculateStreaks } from '../utils/streaks';
@@ -28,6 +29,7 @@ function formatTime(seconds: number) {
 export default function MeditateScreen() {
   const [selectedMinutes, setSelectedMinutes] = useState(10);
   const [dialogVisible, setDialogVisible] = useState(false);
+  const [infoVisible, setInfoVisible] = useState(false);
   const { status, totalSeconds, secondsRemaining, progress, prepMessage, start, reset } = useMeditationTimer();
   const logMeditationSession = useSessionStore((s) => s.logMeditationSession);
   const meditationSessions = useSessionStore((s) => s.meditationSessions);
@@ -131,6 +133,9 @@ export default function MeditateScreen() {
   // idle
   return (
     <SafeAreaView style={styles.container}>
+      <Pressable style={styles.infoBtn} onPress={() => setInfoVisible(true)} hitSlop={16}>
+        <Text style={styles.infoBtnText}>ⓘ</Text>
+      </Pressable>
       <View style={styles.body}>
         <Text style={styles.title}>Meditate</Text>
         <View style={styles.streakBadge}>
@@ -166,6 +171,7 @@ export default function MeditateScreen() {
           <Text style={styles.startButtonText}>Start</Text>
         </Pressable>
       </View>
+      <HowToMeditateModal visible={infoVisible} onClose={() => setInfoVisible(false)} />
     </SafeAreaView>
   );
 }
@@ -181,6 +187,22 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 24,
     paddingBottom: 40,
+  },
+  // info button
+  infoBtn: {
+    position: 'absolute',
+    top: 16,
+    right: 20,
+    zIndex: 1,
+    width: 36,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  infoBtnText: {
+    fontSize: 24,
+    color: '#6F6B66',
+    lineHeight: 28,
   },
   // idle
   title: {
