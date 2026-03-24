@@ -66,6 +66,20 @@ function formatTime(iso: string): string {
   return `${h}:${min} ${d.getHours() >= 12 ? 'PM' : 'AM'}`;
 }
 
+function toMonthStart(date: Date): string {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-01`;
+}
+
+function shiftMonth(monthStart: string, delta: number): string {
+  const [year, month] = monthStart.split('-').map(Number);
+  const nextDate = new Date(year, month - 1 + delta, 1);
+  return toMonthStart(nextDate);
+}
+
+function getMonthKey(dateString: string): string {
+  return dateString.slice(0, 7);
+}
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 type MarkedDay = {
@@ -87,12 +101,11 @@ export default function JourneyScreen() {
 
   const [viewMode, setViewMode] = useState<'month' | 'day'>('month');
   const [selectedDate, setSelectedDate] = useState('');
-  const [currentMonth] = useState(() => {
-    const n = new Date();
-    return `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, '0')}-01`;
-  });
+  const [currentMonth] = useState(() => toMonthStart(new Date()));
+  const [visibleMonth, setVisibleMonth] = useState(currentMonth);
 
   const hasNoSessions = sessions.length === 0 && meditationSessions.length === 0;
+  const isAtCurrentMonth = getMonthKey(visibleMonth) === getMonthKey(currentMonth);
 
   const markedDates = useMemo((): Record<string, MarkedDay> => {
     const dayMap: Record<string, { hasMeditation: boolean; hasBreathing: boolean }> = {};
@@ -211,10 +224,30 @@ export default function JourneyScreen() {
         <ScrollView contentContainerStyle={styles.scroll}>
           <View style={styles.calendarCard}>
             <Calendar
-              current={currentMonth}
+              key={visibleMonth}
+              current={visibleMonth}
               markingType="multi-dot"
               markedDates={markedDates}
               theme={calendarTheme}
+              disableArrowRight={isAtCurrentMonth}
+              maxDate={new Date().toISOString().split('T')[0]}
+              onPressArrowLeft={() => setVisibleMonth((month) => shiftMonth(month, -1))}
+              onPressArrowRight={() => {
+                if (!isAtCurrentMonth) {
+                  setVisibleMonth((month) => {
+                    const nextMonth = shiftMonth(month, 1);
+                    return getMonthKey(nextMonth) > getMonthKey(currentMonth)
+                      ? currentMonth
+                      : nextMonth;
+                  });
+                }
+              }}
+              onMonthChange={(month) => {
+                const nextMonth = `${month.year}-${String(month.month).padStart(2, '0')}-01`;
+                setVisibleMonth(
+                  getMonthKey(nextMonth) > getMonthKey(currentMonth) ? currentMonth : nextMonth,
+                );
+              }}
               onDayPress={(day) => {
                 const hasActivity = (markedDates[day.dateString]?.dots?.length ?? 0) > 0;
                 if (hasActivity) {
