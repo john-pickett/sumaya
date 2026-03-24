@@ -1,0 +1,78 @@
+{
+  "exercises": [
+    {
+      "id": "box_breathing",
+      "name": "Box Breathing",
+      "emotion": "Stressed or overwhelmed",
+      "emoji": "😰",
+      "color": "#5B8DB8",
+      "shape": "square",
+      "description": "A structured rhythm to anchor a racing mind.",
+      "phases": [
+        { "label": "Inhale", "duration": 4 },
+        { "label": "Hold", "duration": 4 },
+        { "label": "Exhale", "duration": 4 },
+        { "label": "Hold", "duration": 4 }
+      ],
+      "length": 8
+    },
+    {
+      "id": "four_seven_eight",
+      "name": "4-7-8 Breathing",
+      "emotion": "Anxious or restless",
+      "emoji": "😟",
+      "color": "#7B68B5",
+      "shape": "circle",
+      "description": "A deep exhale technique to calm anxiety and prepare for sleep.",
+      "phases": [
+        { "label": "Inhale", "duration": 4 },
+        { "label": "Hold", "duration": 7 },
+        { "label": "Exhale", "duration": 8 }
+      ],
+      "length": 8
+    },
+    {
+      "id": "coherent",
+      "name": "Coherent Breathing",
+      "emotion": "Sad or emotionally low",
+      "emoji": "😔",
+      "color": "#6BAE8E",
+      "shape": "circle",
+      "description": "Slow, even breathing to gently lift a low mood.",
+      "phases": [
+        { "label": "Inhale", "duration": 5 },
+        { "label": "Exhale", "duration": 5 }
+      ],
+      "length": 8
+    },
+    {
+      "id": "physiological_sigh",
+      "name": "Physiological Sigh",
+      "emotion": "Panicked or need help now",
+      "emoji": "😱",
+      "color": "#E07B5A",
+      "shape": "triangle",
+      "description": "The fastest-acting technique for acute stress. One or two cycles is enough.",
+      "phases": [
+        { "label": "Inhale", "duration": 2 },
+        { "label": "Inhale again", "duration": 1 },
+        { "label": "Exhale", "duration": 6 }
+      ],
+      "length": 2
+    },
+    {
+      "id": "energizing",
+      "name": "Energizing Breath",
+      "emotion": "Tired or foggy",
+      "emoji": "😴",
+      "color": "#E8C14E",
+      "shape": "star",
+      "description": "Short, sharp cycles to shake off fatigue and restore focus.",
+      "phases": [
+        { "label": "Inhale", "duration": 1 },
+        { "label": "Exhale", "duration": 1 }
+      ],
+      "length": 8
+    }
+  ]
+}

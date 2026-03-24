@@ -1,20 +1,28 @@
+import { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import BreathingListScreen from './src/screens/BreathingListScreen';
+import BreathingExerciseScreen from './src/screens/BreathingExerciseScreen';
+import type { Exercise } from './src/types/breathing';
 
 export default function App() {
+  const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
+
+  if (selectedExercise) {
+    return (
+      <>
+        <BreathingExerciseScreen
+          exercise={selectedExercise}
+          onBack={() => setSelectedExercise(null)}
+        />
+        <StatusBar style="dark" />
+      </>
+    );
+  }
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <>
+      <BreathingListScreen onSelectExercise={setSelectedExercise} />
+      <StatusBar style="dark" />
+    </>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
