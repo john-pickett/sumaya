@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Calendar } from 'react-native-calendars';
 import { useSessionStore } from '../store/sessionStore';
 import type { MoodValue, SessionLog, MeditationLog } from '../types/breathing';
+import { calculateStreaks, toLocalDateKey } from '../utils/streaks';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -40,14 +41,6 @@ const calendarTheme = {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function toLocalDateKey(iso: string): string {
-  const d = new Date(iso);
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${y}-${m}-${day}`;
-}
-
 function formatDayTitle(dateStr: string): string {
   const [y, m, d] = dateStr.split('-').map(Number);
   const date = new Date(y, m - 1, d);
@@ -80,6 +73,16 @@ function getMonthKey(dateString: string): string {
   return dateString.slice(0, 7);
 }
 
+function formatStreakDate(dateKey: string): string {
+  const [, m, d] = dateKey.split('-').map(Number);
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return `${months[m - 1]} ${d}`;
+}
+
+function formatStreakYear(dateKey: string): string {
+  return dateKey.split('-')[0];
+}
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 type MarkedDay = {
@@ -98,6 +101,8 @@ type DayEntry =
 export default function JourneyScreen() {
   const sessions = useSessionStore((s) => s.sessions);
   const meditationSessions = useSessionStore((s) => s.meditationSessions);
+
+  const streakData = useMemo(() => calculateStreaks(meditationSessions), [meditationSessions]);
 
   const [viewMode, setViewMode] = useState<'month' | 'day'>('month');
   const [selectedDate, setSelectedDate] = useState('');
@@ -222,6 +227,27 @@ export default function JourneyScreen() {
         </View>
       ) : (
         <ScrollView contentContainerStyle={styles.scroll}>
+          {meditationSessions.length > 0 && (
+            <View style={styles.statsRow}>
+              <View style={styles.statCard}>
+                <Text style={styles.statEmoji}>🔥</Text>
+                <Text style={styles.statNumber}>{streakData.currentStreak}</Text>
+                <Text style={styles.statLabel}>day streak</Text>
+              </View>
+              <View style={styles.statCard}>
+                <Text style={styles.statEmoji}>🏆</Text>
+                <Text style={styles.statNumber}>{streakData.longestStreak}</Text>
+                <Text style={styles.statLabel}>best streak</Text>
+                {streakData.longestStreak > 0 && (
+                  <Text style={styles.statDateRange}>
+                    {streakData.longestEnd === toLocalDateKey(new Date().toISOString())
+                      ? `${formatStreakDate(streakData.longestStart)} – ongoing!`
+                      : `${formatStreakDate(streakData.longestStart)} – ${formatStreakDate(streakData.longestEnd)}, ${formatStreakYear(streakData.longestEnd)}`}
+                  </Text>
+                )}
+              </View>
+            </View>
+          )}
           <View style={styles.calendarCard}>
             <Calendar
               key={visibleMonth}
@@ -417,5 +443,46 @@ const styles = StyleSheet.create({
   sessionMood: {
     fontSize: 24,
     paddingRight: 14,
+  },
+  // Streak stats
+  statsRow: {
+    flexDirection: 'row',
+    marginHorizontal: 16,
+    marginTop: 16,
+    marginBottom: 4,
+    gap: 12,
+  },
+  statCard: {
+    flex: 1,
+    backgroundColor: CARD_BG,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: BORDER,
+    paddingVertical: 16,
+    paddingHorizontal: 12,
+    alignItems: 'center',
+  },
+  statEmoji: {
+    fontSize: 24,
+    marginBottom: 6,
+  },
+  statNumber: {
+    fontSize: 32,
+    fontWeight: '700',
+    color: TEXT_PRIMARY,
+    lineHeight: 36,
+  },
+  statLabel: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: TEXT_SECONDARY,
+    marginTop: 2,
+  },
+  statDateRange: {
+    fontSize: 11,
+    color: ACCENT,
+    fontWeight: '500',
+    marginTop: 4,
+    textAlign: 'center',
   },
 });

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Circle } from 'react-native-svg';
@@ -6,6 +6,7 @@ import { useMeditationTimer } from '../hooks/useMeditationTimer';
 import PostExerciseMoodDialog from '../components/PostExerciseMoodDialog';
 import { useSessionStore } from '../store/sessionStore';
 import type { MoodValue } from '../types/breathing';
+import { calculateStreaks } from '../utils/streaks';
 
 const ACCENT = '#7B68B5';
 const DURATION_OPTIONS = [2, 5, 10, 15, 20, 30];
@@ -29,6 +30,8 @@ export default function MeditateScreen() {
   const [dialogVisible, setDialogVisible] = useState(false);
   const { status, totalSeconds, secondsRemaining, progress, prepMessage, start, reset } = useMeditationTimer();
   const logMeditationSession = useSessionStore((s) => s.logMeditationSession);
+  const meditationSessions = useSessionStore((s) => s.meditationSessions);
+  const { currentStreak } = useMemo(() => calculateStreaks(meditationSessions), [meditationSessions]);
 
   useEffect(() => {
     if (status === 'done') setDialogVisible(true);
@@ -130,6 +133,13 @@ export default function MeditateScreen() {
     <SafeAreaView style={styles.container}>
       <View style={styles.body}>
         <Text style={styles.title}>Meditate</Text>
+        <View style={styles.streakBadge}>
+          <Text style={styles.streakBadgeText}>
+            {currentStreak > 0
+              ? `🔥 ${currentStreak} day${currentStreak === 1 ? '' : 's'} in a row`
+              : 'Start your streak today!'}
+          </Text>
+        </View>
         <Text style={styles.label}>How long?</Text>
 
         <View style={styles.durationRow}>
@@ -177,7 +187,21 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontWeight: '700',
     color: '#1A1A2E',
-    marginBottom: 36,
+    marginBottom: 12,
+  },
+  streakBadge: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    backgroundColor: '#FFFDF9',
+    borderWidth: 1.5,
+    borderColor: '#E7E1D8',
+    marginBottom: 28,
+  },
+  streakBadgeText: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#1A1A2E',
   },
   label: {
     fontSize: 16,
