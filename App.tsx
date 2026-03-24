@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import BreathingListScreen from './src/screens/BreathingListScreen';
 import BreathingExerciseScreen from './src/screens/BreathingExerciseScreen';
+import MeditateScreen from './src/screens/MeditateScreen';
 import PlaceholderScreen from './src/screens/PlaceholderScreen';
 import type { Exercise } from './src/types/breathing';
 
@@ -23,13 +24,7 @@ export default function App() {
   function renderCurrentTab() {
     switch (activeTab) {
       case 'meditate':
-        return (
-          <PlaceholderScreen
-            emoji="🧘"
-            title="Meditate"
-            description="Meditation sessions will live here soon."
-          />
-        );
+        return <MeditateScreen />;
       case 'journey':
         return (
           <PlaceholderScreen
