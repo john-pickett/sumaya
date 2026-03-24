@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "meditation",
-    "slug": "meditation",
-    "version": "1.0.0",
+    "name": "sumaya",
+    "slug": "sumaya",
+    "version": "1.1.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -13,21 +13,33 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
+      "package": "com.fiveamsoftware.sumaya",
       "supportsTablet": true,
       "infoPlist": {
-        "UIBackgroundModes": ["audio"]
-      }
+        "UIBackgroundModes": [
+          "audio"
+        ]
+      },
+      "buildNumber": "10101"
     },
     "android": {
+      "package": "com.fiveamsoftware.sumaya",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "versionCode": 10101
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "14d88c96-8978-4b4d-8cdb-0a5ff2e9267c"
+      }
+    },
+    "owner": "john_p"
   }
 }
