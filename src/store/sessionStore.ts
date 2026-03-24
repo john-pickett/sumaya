@@ -1,11 +1,13 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import type { SessionLog } from '../types/breathing';
+import type { SessionLog, MeditationLog } from '../types/breathing';
 
 interface SessionState {
   sessions: SessionLog[];
   logSession: (entry: Omit<SessionLog, 'id'>) => void;
+  meditationSessions: MeditationLog[];
+  logMeditationSession: (entry: Omit<MeditationLog, 'id'>) => void;
 }
 
 export const useSessionStore = create<SessionState>()(
@@ -15,6 +17,11 @@ export const useSessionStore = create<SessionState>()(
       logSession: (entry) =>
         set((s) => ({
           sessions: [{ ...entry, id: Date.now().toString() }, ...s.sessions],
+        })),
+      meditationSessions: [],
+      logMeditationSession: (entry) =>
+        set((s) => ({
+          meditationSessions: [{ ...entry, id: Date.now().toString() }, ...s.meditationSessions],
         })),
     }),
     {

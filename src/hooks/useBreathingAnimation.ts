@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { Animated, Easing } from 'react-native';
-import { setAudioModeAsync, useAudioPlayer } from 'expo-audio';
+import { setAudioModeAsync } from 'expo-audio';
 import * as Haptics from 'expo-haptics';
 import type { Exercise } from '../types/breathing';
+import { useChimePlayer } from './useChimePlayer';
 
 export type ExerciseStatus = 'countdown' | 'running' | 'done';
 
@@ -24,7 +25,7 @@ function targetScale(label: string): number {
 
 export function useBreathingAnimation(exercise: Exercise): BreathingAnimation {
   const scale = useRef(new Animated.Value(0.4)).current;
-  const chimePlayer = useAudioPlayer(require('../../assets/sounds/chime.mp3'));
+  const { player: chimePlayer } = useChimePlayer();
   const [status, setStatus] = useState<ExerciseStatus>('countdown');
   const [countdownLabel, setCountdownLabel] = useState('2');
   const [currentPhaseLabel, setCurrentPhaseLabel] = useState(exercise.phases[0].label);

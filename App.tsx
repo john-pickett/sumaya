@@ -5,6 +5,8 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import BreathingListScreen from './src/screens/BreathingListScreen';
 import BreathingExerciseScreen from './src/screens/BreathingExerciseScreen';
 import MeditateScreen from './src/screens/MeditateScreen';
+import JourneyScreen from './src/screens/JourneyScreen';
+import SettingsScreen from './src/screens/SettingsScreen';
 import PlaceholderScreen from './src/screens/PlaceholderScreen';
 import type { Exercise } from './src/types/breathing';
 
@@ -26,21 +28,9 @@ export default function App() {
       case 'meditate':
         return <MeditateScreen />;
       case 'journey':
-        return (
-          <PlaceholderScreen
-            emoji="🗺️"
-            title="Journey"
-            description="Your progress and milestones will show up here soon."
-          />
-        );
+        return <JourneyScreen />;
       case 'settings':
-        return (
-          <PlaceholderScreen
-            emoji="⚙️"
-            title="Settings"
-            description="Preferences and app settings will be available here soon."
-          />
-        );
+        return <SettingsScreen />;
       case 'breathe':
       default:
         if (selectedExercise) {

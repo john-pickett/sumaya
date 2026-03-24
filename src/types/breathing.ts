@@ -27,3 +27,12 @@ export type SessionLog = {
   exerciseEmotion: string;
   postExerciseMood: MoodValue | null;
 };
+
+export type MeditationLog = {
+  id: string;
+  completedAt: string;
+  durationMinutes: number;
+  postMood: MoodValue | null;
+};
+
+export type ChimeId = 'crystal' | 'temple' | 'wind' | 'bowl' | 'tone' | 'bamboo';

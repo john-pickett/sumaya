@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import { Animated } from 'react-native';
 import { setAudioModeAsync, useAudioPlayer } from 'expo-audio';
 import * as Haptics from 'expo-haptics';
+import { useChimePlayer } from './useChimePlayer';
 
 export type MeditationStatus = 'idle' | 'preparing' | 'running' | 'done';
 
@@ -21,7 +22,7 @@ function randomChimeDelay() {
 }
 
 export function useMeditationTimer(): MeditationTimer {
-  const chimePlayer = useAudioPlayer(require('../../assets/sounds/chime.mp3'));
+  const { player: chimePlayer } = useChimePlayer();
   const fanfarePlayer = useAudioPlayer(require('../../assets/sounds/fanfare.mp3'));
 
   const [status, setStatus] = useState<MeditationStatus>('idle');

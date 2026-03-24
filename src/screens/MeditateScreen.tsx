@@ -1,8 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Circle } from 'react-native-svg';
 import { useMeditationTimer } from '../hooks/useMeditationTimer';
+import PostExerciseMoodDialog from '../components/PostExerciseMoodDialog';
+import { useSessionStore } from '../store/sessionStore';
+import type { MoodValue } from '../types/breathing';
 
 const ACCENT = '#7B68B5';
 const DURATION_OPTIONS = [2, 5, 10, 15, 20, 30];
@@ -23,7 +26,31 @@ function formatTime(seconds: number) {
 
 export default function MeditateScreen() {
   const [selectedMinutes, setSelectedMinutes] = useState(10);
+  const [dialogVisible, setDialogVisible] = useState(false);
   const { status, totalSeconds, secondsRemaining, progress, prepMessage, start, reset } = useMeditationTimer();
+  const logMeditationSession = useSessionStore((s) => s.logMeditationSession);
+
+  useEffect(() => {
+    if (status === 'done') setDialogVisible(true);
+  }, [status]);
+
+  function handleMoodSelect(mood: MoodValue) {
+    logMeditationSession({
+      completedAt: new Date().toISOString(),
+      durationMinutes: Math.round(totalSeconds / 60),
+      postMood: mood,
+    });
+    setDialogVisible(false);
+  }
+
+  function handleSkip() {
+    logMeditationSession({
+      completedAt: new Date().toISOString(),
+      durationMinutes: Math.round(totalSeconds / 60),
+      postMood: null,
+    });
+    setDialogVisible(false);
+  }
 
   const strokeDashoffset = progress.interpolate({
     inputRange: [0, 1],
@@ -40,10 +67,19 @@ export default function MeditateScreen() {
           <Text style={styles.doneSubtext}>
             You meditated for {minutesDone} {minutesDone === 1 ? 'minute' : 'minutes'}.
           </Text>
-          <Pressable style={[styles.startButton, { backgroundColor: ACCENT }]} onPress={reset}>
+          <Pressable
+            style={[styles.startButton, { backgroundColor: ACCENT }]}
+            onPress={() => { setDialogVisible(false); reset(); }}
+          >
             <Text style={styles.startButtonText}>Done</Text>
           </Pressable>
         </View>
+        <PostExerciseMoodDialog
+          visible={dialogVisible}
+          accentColor={ACCENT}
+          onSelect={handleMoodSelect}
+          onSkip={handleSkip}
+        />
       </SafeAreaView>
     );
   }
