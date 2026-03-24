@@ -36,3 +36,5 @@ export type MeditationLog = {
 };
 
 export type ChimeId = 'crystal' | 'temple' | 'wind' | 'bowl' | 'tone' | 'bamboo';
+
+export type FanfareId = 'triumph' | 'bells' | 'gentle' | 'rising' | 'majestic' | 'zen';
