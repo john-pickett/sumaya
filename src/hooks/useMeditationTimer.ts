@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Animated } from 'react-native';
 import { setAudioModeAsync } from 'expo-audio';
 import { activateKeepAwakeAsync, deactivateKeepAwakeAsync } from 'expo-keep-awake';
@@ -94,32 +94,38 @@ export function useMeditationTimer(): MeditationTimer {
     animRef.current = null;
   }
 
+  // Handle meditation completion outside of the state updater to avoid
+  // side effects (setState, native audio calls) inside a pure updater function,
+  // which causes crashes in React 19 concurrent mode on iOS (RN new architecture).
+  useEffect(() => {
+    if (secondsRemaining === 0 && status === 'running') {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+      if (chimeTimeoutRef.current) {
+        clearTimeout(chimeTimeoutRef.current);
+        chimeTimeoutRef.current = null;
+      }
+      stopRef.current = true;
+      deactivateKeepAwakeAsync().catch(() => {});
+      setStatus('done');
+      playFanfare();
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [secondsRemaining, status]);
+
   function beginMeditation(seconds: number) {
     if (stopRef.current) return;
     activateKeepAwakeAsync().catch(() => {});
     setPrepMessage(null);
     setStatus('running');
 
-    // Countdown interval
+    // Countdown interval — updater is pure (no side effects); completion
+    // is handled by the useEffect above.
     intervalRef.current = setInterval(() => {
-      setSecondsRemaining((s) => {
-        const next = s - 1;
-        if (next <= 0) {
-          clearInterval(intervalRef.current!);
-          intervalRef.current = null;
-          stopRef.current = true;
-          if (chimeTimeoutRef.current) {
-            clearTimeout(chimeTimeoutRef.current);
-            chimeTimeoutRef.current = null;
-          }
-          deactivateKeepAwakeAsync().catch(() => {});
-          setStatus('done');
-          playFanfare();
-          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
-          return 0;
-        }
-        return next;
-      });
+      setSecondsRemaining((s) => (s <= 1 ? 0 : s - 1));
     }, 1000);
 
     // Arc animation: progress 0 → 1 over the full duration
