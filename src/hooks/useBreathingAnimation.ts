@@ -25,7 +25,7 @@ function targetScale(label: string): number {
 
 export function useBreathingAnimation(exercise: Exercise): BreathingAnimation {
   const scale = useRef(new Animated.Value(0.4)).current;
-  const { player: chimePlayer } = useChimePlayer();
+  const { play: playChime } = useChimePlayer();
   const [status, setStatus] = useState<ExerciseStatus>('countdown');
   const [countdownLabel, setCountdownLabel] = useState('2');
   const [currentPhaseLabel, setCurrentPhaseLabel] = useState(exercise.phases[0].label);
@@ -38,22 +38,12 @@ export function useBreathingAnimation(exercise: Exercise): BreathingAnimation {
 
   useEffect(() => {
     stopRef.current = false;
-    chimePlayer.volume = 0.6;
 
     async function configureAudio() {
       try {
         await setAudioModeAsync({ playsInSilentMode: true });
       } catch {
         // audio is a nice-to-have; silently continue without it
-      }
-    }
-
-    async function playChime() {
-      try {
-        await chimePlayer.seekTo(0);
-        chimePlayer.play();
-      } catch {
-        // ignore playback errors
       }
     }
 
@@ -139,7 +129,7 @@ export function useBreathingAnimation(exercise: Exercise): BreathingAnimation {
       timeoutsRef.current = [];
       scale.stopAnimation();
     };
-  }, [chimePlayer, exercise.id]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [exercise.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return { scale, status, countdownLabel, currentPhaseLabel, secondsRemaining, cyclesRemaining };
 }

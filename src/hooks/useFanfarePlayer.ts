@@ -1,4 +1,4 @@
-import { setAudioModeAsync, useAudioPlayer } from 'expo-audio';
+import { createAudioPlayer, setAudioModeAsync } from 'expo-audio';
 import { useSettingsStore } from '../store/settingsStore';
 import type { FanfareId } from '../types/breathing';
 
@@ -11,35 +11,54 @@ export const FANFARE_OPTIONS: { id: FanfareId; name: string; description: string
   { id: 'zen',      name: 'Zen',      description: 'Peaceful and calm' },
 ];
 
+// Sources kept alongside players so replace() can reset position without async seekTo
+const FANFARE_SOURCES: Record<FanfareId, number> = {
+  triumph:  require('../../assets/sounds/fanfare.mp3'),
+  bells:    require('../../assets/sounds/fanfare_bells.mp3'),
+  gentle:   require('../../assets/sounds/fanfare_gentle.mp3'),
+  rising:   require('../../assets/sounds/fanfare_rising.mp3'),
+  majestic: require('../../assets/sounds/fanfare_majestic.mp3'),
+  zen:      require('../../assets/sounds/fanfare_zen.mp3'),
+};
+
+// Module-level players — created once, never released, not tied to component lifecycle.
+// useAudioPlayer (useReleasingSharedObject) releases the native SharedObject on unmount;
+// calling play() after unmount crashes on Fabric/JSI. createAudioPlayer avoids this entirely.
+const players: Record<FanfareId, ReturnType<typeof createAudioPlayer>> = {
+  triumph:  createAudioPlayer(FANFARE_SOURCES.triumph),
+  bells:    createAudioPlayer(FANFARE_SOURCES.bells),
+  gentle:   createAudioPlayer(FANFARE_SOURCES.gentle),
+  rising:   createAudioPlayer(FANFARE_SOURCES.rising),
+  majestic: createAudioPlayer(FANFARE_SOURCES.majestic),
+  zen:      createAudioPlayer(FANFARE_SOURCES.zen),
+};
+
 export function useFanfarePlayer() {
   const selectedFanfareId = useSettingsStore((s) => s.selectedFanfareId);
 
-  // All players loaded upfront — expo-audio requires static require() paths
-  const triumph  = useAudioPlayer(require('../../assets/sounds/fanfare.mp3'));
-  const bells    = useAudioPlayer(require('../../assets/sounds/fanfare_bells.mp3'));
-  const gentle   = useAudioPlayer(require('../../assets/sounds/fanfare_gentle.mp3'));
-  const rising   = useAudioPlayer(require('../../assets/sounds/fanfare_rising.mp3'));
-  const majestic = useAudioPlayer(require('../../assets/sounds/fanfare_majestic.mp3'));
-  const zen      = useAudioPlayer(require('../../assets/sounds/fanfare_zen.mp3'));
-
-  const players: Record<FanfareId, ReturnType<typeof useAudioPlayer>> = {
-    triumph, bells, gentle, rising, majestic, zen,
-  };
-
-  // Stable reference — only changes when selectedFanfareId changes
-  const player = players[selectedFanfareId];
-
-  async function preview(id: FanfareId) {
-    const p = players[id];
+  // Synchronous: replace() resets position to start without an async seekTo gap
+  function play() {
     try {
-      await setAudioModeAsync({ playsInSilentMode: true });
+      const p = players[selectedFanfareId];
+      p.replace(FANFARE_SOURCES[selectedFanfareId]);
       p.volume = 0.8;
-      await p.seekTo(0);
       p.play();
     } catch {
       // ignore
     }
   }
 
-  return { player, preview };
+  async function preview(id: FanfareId) {
+    const p = players[id];
+    try {
+      await setAudioModeAsync({ playsInSilentMode: true });
+      p.replace(FANFARE_SOURCES[id]);
+      p.volume = 0.8;
+      p.play();
+    } catch {
+      // ignore
+    }
+  }
+
+  return { play, preview };
 }

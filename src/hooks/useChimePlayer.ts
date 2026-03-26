@@ -1,4 +1,4 @@
-import { setAudioModeAsync, useAudioPlayer } from 'expo-audio';
+import { createAudioPlayer, setAudioModeAsync } from 'expo-audio';
 import { useSettingsStore } from '../store/settingsStore';
 import type { ChimeId } from '../types/breathing';
 
@@ -11,35 +11,51 @@ export const CHIME_OPTIONS: { id: ChimeId; name: string; description: string }[]
   { id: 'bamboo',  name: 'Bamboo',       description: 'Earthy and grounding' },
 ];
 
+const CHIME_SOURCES: Record<ChimeId, number> = {
+  crystal: require('../../assets/sounds/chime.mp3'),
+  temple:  require('../../assets/sounds/chime_temple.mp3'),
+  wind:    require('../../assets/sounds/chime_wind.mp3'),
+  bowl:    require('../../assets/sounds/chime_bowl.mp3'),
+  tone:    require('../../assets/sounds/chime_tone.mp3'),
+  bamboo:  require('../../assets/sounds/chime_bamboo.mp3'),
+};
+
+// Module-level players — created once, never released, not tied to component lifecycle.
+const players: Record<ChimeId, ReturnType<typeof createAudioPlayer>> = {
+  crystal: createAudioPlayer(CHIME_SOURCES.crystal),
+  temple:  createAudioPlayer(CHIME_SOURCES.temple),
+  wind:    createAudioPlayer(CHIME_SOURCES.wind),
+  bowl:    createAudioPlayer(CHIME_SOURCES.bowl),
+  tone:    createAudioPlayer(CHIME_SOURCES.tone),
+  bamboo:  createAudioPlayer(CHIME_SOURCES.bamboo),
+};
+
 export function useChimePlayer() {
   const selectedChimeId = useSettingsStore((s) => s.selectedChimeId);
 
-  // All players loaded upfront — expo-audio requires static require() paths
-  const crystal = useAudioPlayer(require('../../assets/sounds/chime.mp3'));
-  const temple  = useAudioPlayer(require('../../assets/sounds/chime_temple.mp3'));
-  const wind    = useAudioPlayer(require('../../assets/sounds/chime_wind.mp3'));
-  const bowl    = useAudioPlayer(require('../../assets/sounds/chime_bowl.mp3'));
-  const tone    = useAudioPlayer(require('../../assets/sounds/chime_tone.mp3'));
-  const bamboo  = useAudioPlayer(require('../../assets/sounds/chime_bamboo.mp3'));
-
-  const players: Record<ChimeId, ReturnType<typeof useAudioPlayer>> = {
-    crystal, temple, wind, bowl, tone, bamboo,
-  };
-
-  // Stable reference — only changes when selectedChimeId changes
-  const player = players[selectedChimeId];
-
-  async function preview(id: ChimeId) {
-    const p = players[id];
+  // Synchronous: replace() resets position to start without an async seekTo gap
+  function play() {
     try {
-      await setAudioModeAsync({ playsInSilentMode: true });
+      const p = players[selectedChimeId];
+      p.replace(CHIME_SOURCES[selectedChimeId]);
       p.volume = 0.6;
-      await p.seekTo(0);
       p.play();
     } catch {
       // ignore
     }
   }
 
-  return { player, preview };
+  async function preview(id: ChimeId) {
+    const p = players[id];
+    try {
+      await setAudioModeAsync({ playsInSilentMode: true });
+      p.replace(CHIME_SOURCES[id]);
+      p.volume = 0.6;
+      p.play();
+    } catch {
+      // ignore
+    }
+  }
+
+  return { play, preview };
 }

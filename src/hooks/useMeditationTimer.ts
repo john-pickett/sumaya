@@ -24,8 +24,8 @@ function randomChimeDelay() {
 }
 
 export function useMeditationTimer(): MeditationTimer {
-  const { player: chimePlayer } = useChimePlayer();
-  const { player: fanfarePlayer } = useFanfarePlayer();
+  const { play: playChime } = useChimePlayer();
+  const { play: playFanfare } = useFanfarePlayer();
 
   const [status, setStatus] = useState<MeditationStatus>('idle');
   const [totalSeconds, setTotalSeconds] = useState(0);
@@ -44,26 +44,6 @@ export function useMeditationTimer(): MeditationTimer {
       await setAudioModeAsync({ playsInSilentMode: true, staysActiveInBackground: true });
     } catch {
       // audio is a nice-to-have
-    }
-  }
-
-  async function playChime() {
-    try {
-      chimePlayer.volume = 0.6;
-      await chimePlayer.seekTo(0);
-      chimePlayer.play();
-    } catch {
-      // ignore
-    }
-  }
-
-  async function playFanfare() {
-    try {
-      fanfarePlayer.volume = 0.8;
-      await fanfarePlayer.seekTo(0);
-      fanfarePlayer.play();
-    } catch {
-      // ignore
     }
   }
 
