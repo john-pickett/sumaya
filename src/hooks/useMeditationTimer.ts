@@ -108,6 +108,8 @@ export function useMeditationTimer(): MeditationTimer {
         chimeTimeoutRef.current = null;
       }
       stopRef.current = true;
+      animRef.current?.stop();
+      animRef.current = null;
       deactivateKeepAwakeAsync().catch(() => {});
       setStatus('done');
       playFanfare();
