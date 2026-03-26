@@ -14,7 +14,7 @@ type TabKey = 'meditate' | 'breathe' | 'journey' | 'settings';
 
 const tabs: { key: TabKey; label: string; icon: string }[] = [
   { key: 'meditate', label: 'Meditate', icon: '🧘' },
-  { key: 'breathe', label: 'Breathe', icon: '🌬️' },
+  { key: 'breathe', label: 'Breathe', icon: '☺️' },
   { key: 'journey', label: 'Journey', icon: '🗺️' },
   { key: 'settings', label: 'Settings', icon: '⚙️' },
 ];
