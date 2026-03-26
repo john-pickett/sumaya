@@ -2,7 +2,7 @@
   "expo": {
     "name": "meditation",
     "slug": "meditation",
-    "version": "1.1.4",
+    "version": "1.1.5",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -22,7 +22,7 @@
         ],
         "ITSAppUsesNonExemptEncryption": false
       },
-      "buildNumber": "10104",
+      "buildNumber": "10105",
       "bundleIdentifier": "com.fiveamsoftware.sumaya"
     },
     "android": {
@@ -33,7 +33,7 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "versionCode": 10104
+      "versionCode": 10105
     },
     "web": {
       "favicon": "./assets/favicon.png"
