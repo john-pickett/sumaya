@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "meditation",
-    "slug": "meditation",
+    "name": "Sumaya",
+    "slug": "sumaya",
     "version": "1.1.9",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -40,7 +40,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "14d88c96-8978-4b4d-8cdb-0a5ff2e9267c"
+        "projectId": "2a5ea6c9-b083-4858-ace3-3c25476407a7"
       }
     },
     "owner": "john_p"
