@@ -44,3 +44,6 @@ yarn-error.*
 /builds
 *.ipa
 *.aab
+
+# app store screenshots
+/screenshots
