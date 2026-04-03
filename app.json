@@ -2,7 +2,7 @@
   "expo": {
     "name": "Sumaya",
     "slug": "sumaya",
-    "version": "1.1.10",
+    "version": "1.1.11",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -22,7 +22,7 @@
         ],
         "ITSAppUsesNonExemptEncryption": false
       },
-      "buildNumber": "10110",
+      "buildNumber": "10111",
       "bundleIdentifier": "com.fiveamsoftware.sumaya"
     },
     "android": {
@@ -33,7 +33,7 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "versionCode": 10110
+      "versionCode": 10111
     },
     "web": {
       "favicon": "./assets/favicon.png"
