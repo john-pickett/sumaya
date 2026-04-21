@@ -33,12 +33,11 @@ const players: Record<ChimeId, ReturnType<typeof createAudioPlayer>> = {
 export function useChimePlayer() {
   const selectedChimeId = useSettingsStore((s) => s.selectedChimeId);
 
-  // Synchronous: replace() resets position to start without an async seekTo gap
-  function play() {
+  async function play() {
     try {
       const p = players[selectedChimeId];
-      p.replace(CHIME_SOURCES[selectedChimeId]);
       p.volume = 0.6;
+      await p.seekTo(0);
       p.play();
     } catch {
       // ignore
@@ -49,8 +48,8 @@ export function useChimePlayer() {
     const p = players[id];
     try {
       await setAudioModeAsync({ playsInSilentMode: true });
-      p.replace(CHIME_SOURCES[id]);
       p.volume = 0.6;
+      await p.seekTo(0);
       p.play();
     } catch {
       // ignore

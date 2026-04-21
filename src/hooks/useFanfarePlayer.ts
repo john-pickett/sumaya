@@ -36,12 +36,11 @@ const players: Record<FanfareId, ReturnType<typeof createAudioPlayer>> = {
 export function useFanfarePlayer() {
   const selectedFanfareId = useSettingsStore((s) => s.selectedFanfareId);
 
-  // Synchronous: replace() resets position to start without an async seekTo gap
-  function play() {
+  async function play() {
     try {
       const p = players[selectedFanfareId];
-      p.replace(FANFARE_SOURCES[selectedFanfareId]);
       p.volume = 0.8;
+      await p.seekTo(0);
       p.play();
     } catch {
       // ignore
@@ -52,8 +51,8 @@ export function useFanfarePlayer() {
     const p = players[id];
     try {
       await setAudioModeAsync({ playsInSilentMode: true });
-      p.replace(FANFARE_SOURCES[id]);
       p.volume = 0.8;
+      await p.seekTo(0);
       p.play();
     } catch {
       // ignore
