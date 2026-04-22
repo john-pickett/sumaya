@@ -8,6 +8,7 @@ import MeditateScreen from './src/screens/MeditateScreen';
 import JourneyScreen from './src/screens/JourneyScreen';
 import SettingsScreen from './src/screens/SettingsScreen';
 import PlaceholderScreen from './src/screens/PlaceholderScreen';
+import { usePushNotifications } from './src/hooks/usePushNotifications';
 import type { Exercise } from './src/types/breathing';
 
 type TabKey = 'meditate' | 'breathe' | 'journey' | 'settings';
@@ -22,6 +23,10 @@ const tabs: { key: TabKey; label: string; icon: string }[] = [
 export default function App() {
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
   const [activeTab, setActiveTab] = useState<TabKey>('meditate');
+
+  // Register for push notifications on startup. Logs the Expo push token to
+  // the Metro console so you can test sends via expo.dev/notifications.
+  usePushNotifications();
 
   function renderCurrentTab() {
     switch (activeTab) {
