@@ -14,6 +14,8 @@ const IS_DEV = process.env.APP_VARIANT === 'development';
 module.exports = () => {
   const base = appJson.expo;
 
+  const projectId = base.extra?.eas?.projectId;
+
   const config = {
     ...base,
     name: IS_DEV ? `${base.name} (Dev)` : base.name,
@@ -26,6 +28,15 @@ module.exports = () => {
     android: {
       ...base.android,
       package: IS_DEV ? `${base.android.package}.dev` : base.android.package,
+    },
+    // Required by expo-updates. "appVersion" policy means the runtime version
+    // is derived from the `version` field (e.g. "1.1.11"), so any JS-only
+    // change is OTA-compatible until you bump the semver.
+    runtimeVersion: {
+      policy: 'appVersion',
+    },
+    updates: {
+      url: `https://u.expo.dev/${projectId}`,
     },
     plugins: [
       ...(base.plugins ?? []),
