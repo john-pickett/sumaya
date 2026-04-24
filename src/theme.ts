@@ -1,6 +1,25 @@
 export type ThemeId = 'light' | 'dark' | 'system';
 
-export const lightColors = {
+export type Colors = {
+  accent: string;
+  background: string;
+  card: string;
+  border: string;
+  borderLight: string;
+  textPrimary: string;
+  textSecondary: string;
+  textDark: string;
+  textMid: string;
+  textMuted: string;
+  textFaint: string;
+  white: string;
+  modalBackdrop: string;
+  shadow: string;
+  dotMeditation: string;
+  dotBreathing: string;
+};
+
+export const lightColors: Colors = {
   // ── Brand ─────────────────────────────────────────────────────────────────
   accent: '#7B68B5',
 
@@ -30,9 +49,9 @@ export const lightColors = {
   // ── Activity dot indicators (calendar) ───────────────────────────────────
   dotMeditation: '#4CAF50',
   dotBreathing: '#F9A825',
-} as const;
+};
 
-export const darkColors = {
+export const darkColors: Colors = {
   // ── Brand ─────────────────────────────────────────────────────────────────
   accent: '#9E8FD5',
 
@@ -62,9 +81,7 @@ export const darkColors = {
   // ── Activity dot indicators (calendar) ───────────────────────────────────
   dotMeditation: '#4CAF50',
   dotBreathing: '#F9A825',
-} as const;
-
-export type Colors = typeof lightColors;
+};
 
 /** Kept for backward compatibility — resolves to light palette. */
 export const colors = lightColors;
