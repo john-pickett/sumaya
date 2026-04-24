@@ -2,13 +2,20 @@ import { useEffect, useMemo, useState } from 'react';
 import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Circle } from 'react-native-svg';
+import * as Notifications from 'expo-notifications';
 import { useMeditationTimer } from '../hooks/useMeditationTimer';
+import { requestNotificationPermission } from '../hooks/usePushNotifications';
 import PostExerciseMoodDialog from '../components/PostExerciseMoodDialog';
 import HowToMeditateModal from '../components/HowToMeditateModal';
+import NotificationReminderModal from '../components/NotificationReminderModal';
+import NotificationTimePickerModal from '../components/NotificationTimePickerModal';
 import { useSessionStore } from '../store/sessionStore';
+import { useSettingsStore } from '../store/settingsStore';
+import type { NotificationTime } from '../store/settingsStore';
 import type { MoodValue } from '../types/breathing';
 import { calculateStreaks } from '../utils/streaks';
 import { colors } from '../theme';
+
 const ACCENT = colors.accent;
 const DURATION_OPTIONS = [2, 5, 10, 15, 20, 30];
 
@@ -30,31 +37,72 @@ export default function MeditateScreen() {
   const [selectedMinutes, setSelectedMinutes] = useState(10);
   const [dialogVisible, setDialogVisible] = useState(false);
   const [infoVisible, setInfoVisible] = useState(false);
+  const [notifReminderVisible, setNotifReminderVisible] = useState(false);
+  const [notifTimePickerVisible, setNotifTimePickerVisible] = useState(false);
+
   const { status, totalSeconds, secondsRemaining, progress, prepMessage, start, reset } = useMeditationTimer();
   const logMeditationSession = useSessionStore((s) => s.logMeditationSession);
   const meditationSessions = useSessionStore((s) => s.meditationSessions);
   const { currentStreak } = useMemo(() => calculateStreaks(meditationSessions), [meditationSessions]);
 
+  const notificationPromptShown = useSettingsStore((s) => s.notificationPromptShown);
+  const setNotificationPromptShown = useSettingsStore((s) => s.setNotificationPromptShown);
+  const setNotificationTime = useSettingsStore((s) => s.setNotificationTime);
+
   useEffect(() => {
     if (status === 'done') setDialogVisible(true);
   }, [status]);
 
+  async function checkAndMaybePrompt(wasFirstSession: boolean) {
+    if (!wasFirstSession || notificationPromptShown) return;
+    const existing = await Notifications.getPermissionsAsync();
+    setNotificationPromptShown(true);
+    if (existing.status !== 'granted') {
+      setNotifReminderVisible(true);
+    }
+  }
+
   function handleMoodSelect(mood: MoodValue) {
+    const wasFirstSession = meditationSessions.length === 0;
     logMeditationSession({
       completedAt: new Date().toISOString(),
       durationMinutes: Math.round(totalSeconds / 60),
       postMood: mood,
     });
     setDialogVisible(false);
+    checkAndMaybePrompt(wasFirstSession);
   }
 
   function handleSkip() {
+    const wasFirstSession = meditationSessions.length === 0;
     logMeditationSession({
       completedAt: new Date().toISOString(),
       durationMinutes: Math.round(totalSeconds / 60),
       postMood: null,
     });
     setDialogVisible(false);
+    checkAndMaybePrompt(wasFirstSession);
+  }
+
+  async function handleReminderYes() {
+    setNotifReminderVisible(false);
+    const result = await requestNotificationPermission();
+    if (result === 'granted') {
+      setNotifTimePickerVisible(true);
+    }
+  }
+
+  function handleReminderNo() {
+    setNotifReminderVisible(false);
+  }
+
+  function handleTimePicked(time: NotificationTime) {
+    setNotificationTime(time);
+    setNotifTimePickerVisible(false);
+  }
+
+  function handleTimeSkipped() {
+    setNotifTimePickerVisible(false);
   }
 
   const strokeDashoffset = progress.interpolate({
@@ -85,6 +133,16 @@ export default function MeditateScreen() {
           onSelect={handleMoodSelect}
           onSkip={handleSkip}
         />
+        <NotificationReminderModal
+          visible={notifReminderVisible}
+          onYes={handleReminderYes}
+          onNo={handleReminderNo}
+        />
+        <NotificationTimePickerModal
+          visible={notifTimePickerVisible}
+          onSet={handleTimePicked}
+          onSkip={handleTimeSkipped}
+        />
       </SafeAreaView>
     );
   }
@@ -93,11 +151,9 @@ export default function MeditateScreen() {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.body}>
-          {/* Arc + timer overlaid: SVG is rotated for correct direction, text is centered on top */}
           <View style={styles.arcContainer}>
             <View style={styles.arcWrapper}>
               <Svg width={ARC_SIZE} height={ARC_SIZE}>
-                {/* Track */}
                 <Circle
                   cx={ARC_CENTER}
                   cy={ARC_CENTER}
@@ -106,7 +162,6 @@ export default function MeditateScreen() {
                   strokeWidth={STROKE_WIDTH}
                   fill="none"
                 />
-                {/* Progress arc */}
                 <AnimatedCircle
                   cx={ARC_CENTER}
                   cy={ARC_CENTER}
@@ -271,8 +326,6 @@ const styles = StyleSheet.create({
   },
   arcWrapper: {
     position: 'absolute',
-    // Rotate 135° to place the start at ~5 o'clock (bottom-right),
-    // then flip horizontally so the arc depletes counter-clockwise
     transform: [{ rotate: '135deg' }, { scaleX: -1 }],
   },
   countdown: {
