@@ -2,8 +2,12 @@ import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSettingsStore } from '../store/settingsStore';
+import type { NotificationTime } from '../store/settingsStore';
 import { useChimePlayer, CHIME_OPTIONS } from '../hooks/useChimePlayer';
 import { useFanfarePlayer, FANFARE_OPTIONS } from '../hooks/useFanfarePlayer';
+import { requestNotificationPermission } from '../hooks/usePushNotifications';
+import NotificationReminderModal from '../components/NotificationReminderModal';
+import NotificationTimePickerModal from '../components/NotificationTimePickerModal';
 import type { ChimeId, FanfareId } from '../types/breathing';
 import { colors } from '../theme';
 
@@ -77,6 +81,8 @@ function SubHeader({ title, onBack }: { title: string; onBack: () => void }) {
 
 export default function SettingsScreen() {
   const [subScreen, setSubScreen] = useState<SubScreen>('main');
+  const [notifReminderVisible, setNotifReminderVisible] = useState(false);
+  const [notifTimePickerVisible, setNotifTimePickerVisible] = useState(false);
 
   const selectedChimeId = useSettingsStore((s) => s.selectedChimeId);
   const setChimeId = useSettingsStore((s) => s.setChimeId);
@@ -86,8 +92,21 @@ export default function SettingsScreen() {
   const { preview: previewChime } = useChimePlayer();
   const { preview: previewFanfare } = useFanfarePlayer();
 
+  const setNotificationTime = useSettingsStore((s) => s.setNotificationTime);
+
   const selectedChimeName = CHIME_OPTIONS.find((o) => o.id === selectedChimeId)?.name ?? '';
   const selectedFanfareName = FANFARE_OPTIONS.find((o) => o.id === selectedFanfareId)?.name ?? '';
+
+  async function handleDevReminderYes() {
+    setNotifReminderVisible(false);
+    const result = await requestNotificationPermission();
+    if (result === 'granted') setNotifTimePickerVisible(true);
+  }
+
+  function handleDevTimePicked(time: NotificationTime) {
+    setNotificationTime(time);
+    setNotifTimePickerVisible(false);
+  }
 
   // ── Chime sub-screen ───────────────────────────────────────────────────────
 
@@ -159,7 +178,34 @@ export default function SettingsScreen() {
             </View>
           </Pressable>
         </View>
+
+        {__DEV__ && (
+          <>
+            <Text style={styles.sectionLabel}>DEVELOPER</Text>
+            <View style={styles.card}>
+              <Pressable style={styles.prefRow} onPress={() => setNotifReminderVisible(true)}>
+                <Text style={styles.prefLabel}>Notification prompt flow</Text>
+                <Text style={styles.chevron}>›</Text>
+              </Pressable>
+            </View>
+          </>
+        )}
       </ScrollView>
+
+      {__DEV__ && (
+        <>
+          <NotificationReminderModal
+            visible={notifReminderVisible}
+            onYes={handleDevReminderYes}
+            onNo={() => setNotifReminderVisible(false)}
+          />
+          <NotificationTimePickerModal
+            visible={notifTimePickerVisible}
+            onSet={handleDevTimePicked}
+            onSkip={() => setNotifTimePickerVisible(false)}
+          />
+        </>
+      )}
     </SafeAreaView>
   );
 }
