@@ -1,6 +1,8 @@
+import { useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import type { Exercise } from '../types/breathing';
-import { colors } from '../theme';
+import { useTheme } from '../hooks/useTheme';
+import type { Colors } from '../theme';
 
 type Props = {
   exercise: Exercise;
@@ -9,6 +11,8 @@ type Props = {
 
 export default function ExerciseCard({ exercise, onPress }: Props) {
   const { name, emotion, emoji, color, description } = exercise;
+  const colors = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
 
   return (
     <Pressable
@@ -28,7 +32,7 @@ export default function ExerciseCard({ exercise, onPress }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   card: {
     flexDirection: 'row',
     borderRadius: 14,

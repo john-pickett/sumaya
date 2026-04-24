@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
@@ -9,6 +9,8 @@ import JourneyScreen from './src/screens/JourneyScreen';
 import SettingsScreen from './src/screens/SettingsScreen';
 import PlaceholderScreen from './src/screens/PlaceholderScreen';
 import { usePushNotifications } from './src/hooks/usePushNotifications';
+import { useTheme, useIsDark } from './src/hooks/useTheme';
+import type { Colors } from './src/theme';
 import type { Exercise } from './src/types/breathing';
 
 type TabKey = 'meditate' | 'breathe' | 'journey' | 'settings';
@@ -24,9 +26,11 @@ export default function App() {
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
   const [activeTab, setActiveTab] = useState<TabKey>('meditate');
 
-  // Register for push notifications on startup. Logs the Expo push token to
-  // the Metro console so you can test sends via expo.dev/notifications.
   usePushNotifications();
+
+  const colors = useTheme();
+  const isDark = useIsDark();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
 
   function renderCurrentTab() {
     switch (activeTab) {
@@ -74,24 +78,24 @@ export default function App() {
           })}
         </SafeAreaView>
       </View>
-      <StatusBar style="dark" />
+      <StatusBar style={isDark ? 'light' : 'dark'} />
     </SafeAreaProvider>
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   app: {
     flex: 1,
-    backgroundColor: '#F7F5F2',
+    backgroundColor: colors.background,
   },
   content: {
     flex: 1,
   },
   tabBar: {
     flexDirection: 'row',
-    backgroundColor: '#FFFDF9',
+    backgroundColor: colors.card,
     borderTopWidth: 1,
-    borderTopColor: '#E7E1D8',
+    borderTopColor: colors.border,
     paddingTop: 10,
     paddingBottom: 14,
     paddingHorizontal: 8,
@@ -113,9 +117,9 @@ const styles = StyleSheet.create({
   tabLabel: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#8E8A83',
+    color: colors.textSecondary,
   },
   tabLabelActive: {
-    color: '#1A1A2E',
+    color: colors.textPrimary,
   },
 });

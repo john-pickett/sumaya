@@ -14,9 +14,9 @@ import { useSettingsStore } from '../store/settingsStore';
 import type { NotificationTime } from '../store/settingsStore';
 import type { MoodValue } from '../types/breathing';
 import { calculateStreaks } from '../utils/streaks';
-import { colors } from '../theme';
+import { useTheme } from '../hooks/useTheme';
+import type { Colors } from '../theme';
 
-const ACCENT = colors.accent;
 const DURATION_OPTIONS = [2, 5, 10, 15, 20, 30];
 
 const ARC_RADIUS = 130;
@@ -39,6 +39,10 @@ export default function MeditateScreen() {
   const [infoVisible, setInfoVisible] = useState(false);
   const [notifReminderVisible, setNotifReminderVisible] = useState(false);
   const [notifTimePickerVisible, setNotifTimePickerVisible] = useState(false);
+
+  const colors = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
+  const accent = colors.accent;
 
   const { status, totalSeconds, secondsRemaining, progress, prepMessage, start, reset } = useMeditationTimer();
   const logMeditationSession = useSessionStore((s) => s.logMeditationSession);
@@ -121,7 +125,7 @@ export default function MeditateScreen() {
             You meditated for {minutesDone} {minutesDone === 1 ? 'minute' : 'minutes'}.
           </Text>
           <Pressable
-            style={[styles.startButton, { backgroundColor: ACCENT }]}
+            style={[styles.startButton, { backgroundColor: accent }]}
             onPress={() => { setDialogVisible(false); reset(); }}
           >
             <Text style={styles.startButtonText}>Done</Text>
@@ -129,7 +133,7 @@ export default function MeditateScreen() {
         </View>
         <PostExerciseMoodDialog
           visible={dialogVisible}
-          accentColor={ACCENT}
+          accentColor={accent}
           onSelect={handleMoodSelect}
           onSkip={handleSkip}
         />
@@ -166,7 +170,7 @@ export default function MeditateScreen() {
                   cx={ARC_CENTER}
                   cy={ARC_CENTER}
                   r={ARC_RADIUS}
-                  stroke={ACCENT}
+                  stroke={accent}
                   strokeWidth={STROKE_WIDTH}
                   fill="none"
                   strokeLinecap="round"
@@ -210,7 +214,7 @@ export default function MeditateScreen() {
             return (
               <Pressable
                 key={min}
-                style={[styles.durationPill, active && { backgroundColor: ACCENT, borderColor: ACCENT }]}
+                style={[styles.durationPill, active && { backgroundColor: accent, borderColor: accent }]}
                 onPress={() => setSelectedMinutes(min)}
               >
                 <Text style={[styles.durationText, active && styles.durationTextActive]}>
@@ -222,7 +226,7 @@ export default function MeditateScreen() {
         </View>
 
         <Pressable
-          style={[styles.startButton, { backgroundColor: ACCENT }]}
+          style={[styles.startButton, { backgroundColor: accent }]}
           onPress={() => start(selectedMinutes)}
         >
           <Text style={styles.startButtonText}>Start</Text>
@@ -233,7 +237,7 @@ export default function MeditateScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,

@@ -1,6 +1,8 @@
+import { useMemo } from 'react';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import type { MoodValue } from '../types/breathing';
-import { colors } from '../theme';
+import { useTheme } from '../hooks/useTheme';
+import type { Colors } from '../theme';
 
 type MoodOption = {
   value: MoodValue;
@@ -25,6 +27,9 @@ type Props = {
 };
 
 export default function PostExerciseMoodDialog({ visible, accentColor, onSelect, onSkip }: Props) {
+  const colors = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
+
   return (
     <Modal visible={visible} transparent animationType="fade">
       <View style={styles.backdrop}>
@@ -51,7 +56,7 @@ export default function PostExerciseMoodDialog({ visible, accentColor, onSelect,
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   backdrop: {
     flex: 1,
     backgroundColor: colors.modalBackdrop,

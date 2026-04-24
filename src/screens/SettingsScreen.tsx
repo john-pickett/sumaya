@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSettingsStore } from '../store/settingsStore';
@@ -8,10 +8,17 @@ import { useFanfarePlayer, FANFARE_OPTIONS } from '../hooks/useFanfarePlayer';
 import { requestNotificationPermission } from '../hooks/usePushNotifications';
 import NotificationReminderModal from '../components/NotificationReminderModal';
 import NotificationTimePickerModal from '../components/NotificationTimePickerModal';
+import { useTheme } from '../hooks/useTheme';
 import type { ChimeId, FanfareId } from '../types/breathing';
-import { colors } from '../theme';
+import type { ThemeId, Colors } from '../theme';
 
 type SubScreen = 'main' | 'chime' | 'fanfare';
+
+const THEME_OPTIONS: { id: ThemeId; label: string }[] = [
+  { id: 'light', label: 'Light' },
+  { id: 'dark', label: 'Dark' },
+  { id: 'system', label: 'System' },
+];
 
 // ─── Shared option list renderer ─────────────────────────────────────────────
 
@@ -22,11 +29,15 @@ function OptionList<T extends string>({
   selectedId,
   onSelect,
   onPreview,
+  colors,
+  styles,
 }: {
   options: OptionItem[];
   selectedId: T;
   onSelect: (id: T) => void;
   onPreview: (id: T) => void;
+  colors: Colors;
+  styles: ReturnType<typeof makeStyles>;
 }) {
   return (
     <View style={styles.card}>
@@ -66,7 +77,15 @@ function OptionList<T extends string>({
 
 // ─── Sub-screen header ────────────────────────────────────────────────────────
 
-function SubHeader({ title, onBack }: { title: string; onBack: () => void }) {
+function SubHeader({
+  title,
+  onBack,
+  styles,
+}: {
+  title: string;
+  onBack: () => void;
+  styles: ReturnType<typeof makeStyles>;
+}) {
   return (
     <View style={styles.subHeader}>
       <Pressable onPress={onBack} hitSlop={12}>
@@ -84,6 +103,11 @@ export default function SettingsScreen() {
   const [notifReminderVisible, setNotifReminderVisible] = useState(false);
   const [notifTimePickerVisible, setNotifTimePickerVisible] = useState(false);
 
+  const colors = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
+
+  const themeId = useSettingsStore((s) => s.themeId);
+  const setThemeId = useSettingsStore((s) => s.setThemeId);
   const selectedChimeId = useSettingsStore((s) => s.selectedChimeId);
   const setChimeId = useSettingsStore((s) => s.setChimeId);
   const selectedFanfareId = useSettingsStore((s) => s.selectedFanfareId);
@@ -113,7 +137,7 @@ export default function SettingsScreen() {
   if (subScreen === 'chime') {
     return (
       <SafeAreaView style={styles.container}>
-        <SubHeader title="Chime" onBack={() => setSubScreen('main')} />
+        <SubHeader title="Chime" onBack={() => setSubScreen('main')} styles={styles} />
         <ScrollView contentContainerStyle={styles.scroll}>
           <Text style={styles.sectionLabel}>SELECT A CHIME SOUND</Text>
           <OptionList
@@ -121,6 +145,8 @@ export default function SettingsScreen() {
             selectedId={selectedChimeId}
             onSelect={(id) => setChimeId(id as ChimeId)}
             onPreview={(id) => previewChime(id as ChimeId)}
+            colors={colors}
+            styles={styles}
           />
         </ScrollView>
       </SafeAreaView>
@@ -132,7 +158,7 @@ export default function SettingsScreen() {
   if (subScreen === 'fanfare') {
     return (
       <SafeAreaView style={styles.container}>
-        <SubHeader title="Fanfare" onBack={() => setSubScreen('main')} />
+        <SubHeader title="Fanfare" onBack={() => setSubScreen('main')} styles={styles} />
         <ScrollView contentContainerStyle={styles.scroll}>
           <Text style={styles.sectionLabel}>SELECT A FANFARE SOUND</Text>
           <OptionList
@@ -140,6 +166,8 @@ export default function SettingsScreen() {
             selectedId={selectedFanfareId}
             onSelect={(id) => setFanfareId(id as FanfareId)}
             onPreview={(id) => previewFanfare(id as FanfareId)}
+            colors={colors}
+            styles={styles}
           />
         </ScrollView>
       </SafeAreaView>
@@ -153,6 +181,25 @@ export default function SettingsScreen() {
       <ScrollView contentContainerStyle={styles.scroll}>
         <View style={styles.header}>
           <Text style={styles.screenTitle}>Settings</Text>
+        </View>
+
+        {/* Appearance */}
+        <Text style={styles.sectionLabel}>APPEARANCE</Text>
+        <View style={styles.segmentCard}>
+          {THEME_OPTIONS.map((opt) => {
+            const isActive = opt.id === themeId;
+            return (
+              <Pressable
+                key={opt.id}
+                style={[styles.segmentButton, isActive && styles.segmentButtonActive]}
+                onPress={() => setThemeId(opt.id)}
+              >
+                <Text style={[styles.segmentLabel, isActive && styles.segmentLabelActive]}>
+                  {opt.label}
+                </Text>
+              </Pressable>
+            );
+          })}
         </View>
 
         <Text style={styles.sectionLabel}>SOUND</Text>
@@ -212,7 +259,7 @@ export default function SettingsScreen() {
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
@@ -273,6 +320,34 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: colors.border,
     marginLeft: 52,
+  },
+  // Segmented appearance picker
+  segmentCard: {
+    marginHorizontal: 16,
+    backgroundColor: colors.card,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: colors.border,
+    flexDirection: 'row',
+    padding: 4,
+    gap: 4,
+  },
+  segmentButton: {
+    flex: 1,
+    paddingVertical: 9,
+    alignItems: 'center',
+    borderRadius: 10,
+  },
+  segmentButtonActive: {
+    backgroundColor: colors.accent,
+  },
+  segmentLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.textSecondary,
+  },
+  segmentLabelActive: {
+    color: colors.white,
   },
   // Main screen preference rows
   prefRow: {

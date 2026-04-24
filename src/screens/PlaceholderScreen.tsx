@@ -1,6 +1,8 @@
+import { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { colors } from '../theme';
+import { useTheme } from '../hooks/useTheme';
+import type { Colors } from '../theme';
 
 type Props = {
   emoji: string;
@@ -9,6 +11,9 @@ type Props = {
 };
 
 export default function PlaceholderScreen({ emoji, title, description }: Props) {
+  const colors = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.card}>
@@ -20,7 +25,7 @@ export default function PlaceholderScreen({ emoji, title, description }: Props) 
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,

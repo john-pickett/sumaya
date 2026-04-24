@@ -1,5 +1,7 @@
+import { useMemo } from 'react';
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { colors } from '../theme';
+import { useTheme } from '../hooks/useTheme';
+import type { Colors } from '../theme';
 
 type Props = {
   visible: boolean;
@@ -37,6 +39,9 @@ const CLOSING_NOTE =
   `A good way to end a session: before you open your eyes, take one slow, deliberate breath, and take a moment to notice how you feel compared to when you started. That small act of reflection helps the habit take root.`;
 
 export default function HowToMeditateModal({ visible, onClose }: Props) {
+  const colors = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
+
   return (
     <Modal visible={visible} transparent animationType="slide">
       <View style={styles.backdrop}>
@@ -67,7 +72,7 @@ export default function HowToMeditateModal({ visible, onClose }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   backdrop: {
     flex: 1,
     justifyContent: 'flex-end',

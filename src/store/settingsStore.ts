@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { ChimeId, FanfareId } from '../types/breathing';
+import type { ThemeId } from '../theme';
 
 export type NotificationTime = {
   hour: number;
@@ -10,6 +11,8 @@ export type NotificationTime = {
 };
 
 interface SettingsState {
+  themeId: ThemeId;
+  setThemeId: (id: ThemeId) => void;
   selectedChimeId: ChimeId;
   setChimeId: (id: ChimeId) => void;
   selectedFanfareId: FanfareId;
@@ -23,6 +26,8 @@ interface SettingsState {
 export const useSettingsStore = create<SettingsState>()(
   persist(
     (set) => ({
+      themeId: 'system',
+      setThemeId: (id) => set({ themeId: id }),
       selectedChimeId: 'crystal',
       setChimeId: (id) => set({ selectedChimeId: id }),
       selectedFanfareId: 'triumph',

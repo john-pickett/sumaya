@@ -1,9 +1,11 @@
+import { useMemo } from 'react';
 import { ScrollView, StyleSheet, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import data from '../data/breathing.json';
 import ExerciseCard from '../components/ExerciseCard';
 import type { Exercise } from '../types/breathing';
-import { colors } from '../theme';
+import { useTheme } from '../hooks/useTheme';
+import type { Colors } from '../theme';
 
 type Props = {
   onSelectExercise: (exercise: Exercise) => void;
@@ -11,6 +13,8 @@ type Props = {
 
 export default function BreathingListScreen({ onSelectExercise }: Props) {
   const exercises = data.exercises as Exercise[];
+  const colors = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -29,7 +33,7 @@ export default function BreathingListScreen({ onSelectExercise }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,

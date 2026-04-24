@@ -1,5 +1,7 @@
+import { useMemo } from 'react';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
-import { colors } from '../theme';
+import { useTheme } from '../hooks/useTheme';
+import type { Colors } from '../theme';
 
 type Props = {
   visible: boolean;
@@ -8,6 +10,9 @@ type Props = {
 };
 
 export default function NotificationReminderModal({ visible, onYes, onNo }: Props) {
+  const colors = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
+
   return (
     <Modal visible={visible} transparent animationType="fade">
       <View style={styles.backdrop}>
@@ -30,7 +35,7 @@ export default function NotificationReminderModal({ visible, onYes, onNo }: Prop
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   backdrop: {
     flex: 1,
     backgroundColor: colors.modalBackdrop,

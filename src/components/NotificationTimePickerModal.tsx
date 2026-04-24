@@ -1,7 +1,8 @@
+import { useMemo, useState } from 'react';
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { useState } from 'react';
 import * as Notifications from 'expo-notifications';
-import { colors } from '../theme';
+import { useTheme } from '../hooks/useTheme';
+import type { Colors } from '../theme';
 import type { NotificationTime } from '../store/settingsStore';
 
 type Props = {
@@ -46,35 +47,36 @@ type DropdownProps = {
   open: boolean;
   onToggle: () => void;
   children: React.ReactNode;
+  dropdownStyles: ReturnType<typeof makeDropdownStyles>;
 };
 
-function Dropdown({ label, displayValue, open, onToggle, children }: DropdownProps) {
+function Dropdown({ label, displayValue, open, onToggle, children, dropdownStyles: d }: DropdownProps) {
   const [headerHeight, setHeaderHeight] = useState(0);
 
   return (
-    <View style={[dropdown.container, open && dropdown.containerOpen]}>
+    <View style={[d.container, open && d.containerOpen]}>
       <View onLayout={(e) => setHeaderHeight(e.nativeEvent.layout.height)}>
-        <Text style={dropdown.label}>{label}</Text>
+        <Text style={d.label}>{label}</Text>
         <Pressable
           style={({ pressed }) => [
-            dropdown.trigger,
-            open && dropdown.triggerOpen,
-            pressed && dropdown.triggerPressed,
+            d.trigger,
+            open && d.triggerOpen,
+            pressed && d.triggerPressed,
           ]}
           onPress={onToggle}
         >
-          <Text style={[dropdown.triggerText, open && dropdown.triggerTextOpen]}>
+          <Text style={[d.triggerText, open && d.triggerTextOpen]}>
             {displayValue}
           </Text>
-          <Text style={[dropdown.chevron, open && dropdown.chevronOpen]}>
+          <Text style={[d.chevron, open && d.chevronOpen]}>
             {open ? '▲' : '▼'}
           </Text>
         </Pressable>
       </View>
 
       {open && (
-        <View style={[dropdown.listWrapper, { top: headerHeight }]}>
-          <ScrollView style={dropdown.list} nestedScrollEnabled bounces={false}>
+        <View style={[d.listWrapper, { top: headerHeight }]}>
+          <ScrollView style={d.list} nestedScrollEnabled bounces={false}>
             {children}
           </ScrollView>
         </View>
@@ -87,19 +89,20 @@ type OptionProps = {
   label: string;
   selected: boolean;
   onPress: () => void;
+  dropdownStyles: ReturnType<typeof makeDropdownStyles>;
 };
 
-function DropdownOption({ label, selected, onPress }: OptionProps) {
+function DropdownOption({ label, selected, onPress, dropdownStyles: d }: OptionProps) {
   return (
     <Pressable
       style={({ pressed }) => [
-        dropdown.option,
-        selected && dropdown.optionSelected,
-        pressed && dropdown.optionPressed,
+        d.option,
+        selected && d.optionSelected,
+        pressed && d.optionPressed,
       ]}
       onPress={onPress}
     >
-      <Text style={[dropdown.optionText, selected && dropdown.optionTextSelected]}>
+      <Text style={[d.optionText, selected && d.optionTextSelected]}>
         {label}
       </Text>
     </Pressable>
@@ -111,6 +114,10 @@ export default function NotificationTimePickerModal({ visible, onSet, onSkip }: 
   const [minute, setMinute] = useState<0 | 15 | 30 | 45>(0);
   const [isPM, setIsPM] = useState(false);
   const [openPicker, setOpenPicker] = useState<OpenPicker>(null);
+
+  const colors = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
+  const dropdownStyles = useMemo(() => makeDropdownStyles(colors), [colors]);
 
   function togglePicker(picker: 'hour' | 'minute') {
     setOpenPicker((prev) => (prev === picker ? null : picker));
@@ -141,6 +148,7 @@ export default function NotificationTimePickerModal({ visible, onSet, onSkip }: 
               displayValue={String(hour)}
               open={openPicker === 'hour'}
               onToggle={() => togglePicker('hour')}
+              dropdownStyles={dropdownStyles}
             >
               {HOURS.map((h) => (
                 <DropdownOption
@@ -148,6 +156,7 @@ export default function NotificationTimePickerModal({ visible, onSet, onSkip }: 
                   label={String(h)}
                   selected={h === hour}
                   onPress={() => { setHour(h); setOpenPicker(null); }}
+                  dropdownStyles={dropdownStyles}
                 />
               ))}
             </Dropdown>
@@ -157,6 +166,7 @@ export default function NotificationTimePickerModal({ visible, onSet, onSkip }: 
               displayValue={minuteLabel(minute)}
               open={openPicker === 'minute'}
               onToggle={() => togglePicker('minute')}
+              dropdownStyles={dropdownStyles}
             >
               {MINUTES.map((m) => (
                 <DropdownOption
@@ -164,6 +174,7 @@ export default function NotificationTimePickerModal({ visible, onSet, onSkip }: 
                   label={minuteLabel(m)}
                   selected={m === minute}
                   onPress={() => { setMinute(m); setOpenPicker(null); }}
+                  dropdownStyles={dropdownStyles}
                 />
               ))}
             </Dropdown>
@@ -199,11 +210,9 @@ export default function NotificationTimePickerModal({ visible, onSet, onSkip }: 
   );
 }
 
-const dropdown = StyleSheet.create({
+const makeDropdownStyles = (colors: Colors) => StyleSheet.create({
   container: {
     flex: 1,
-    // z-index is overridden per-instance when open so the active list
-    // paints above the sibling dropdown
     zIndex: 1,
   },
   containerOpen: {
@@ -252,13 +261,12 @@ const dropdown = StyleSheet.create({
   chevronOpen: {
     color: colors.accent,
   },
-  // Absolutely-positioned wrapper so the list doesn't push content down
   listWrapper: {
     position: 'absolute',
     left: 0,
     right: 0,
     zIndex: 20,
-    elevation: 20, // Android stacking
+    elevation: 20,
     shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
@@ -294,7 +302,7 @@ const dropdown = StyleSheet.create({
   },
 });
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   backdrop: {
     flex: 1,
     backgroundColor: colors.modalBackdrop,
@@ -327,7 +335,6 @@ const styles = StyleSheet.create({
     gap: 12,
     width: '100%',
     marginBottom: 20,
-    // Must be above ampmRow / buttons so absolute lists float over them
     zIndex: 10,
   },
   ampmRow: {

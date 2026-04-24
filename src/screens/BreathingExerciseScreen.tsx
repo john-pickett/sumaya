@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useBreathingAnimation } from '../hooks/useBreathingAnimation';
@@ -6,7 +6,8 @@ import BreathingShape from '../components/BreathingShape';
 import PostExerciseMoodDialog from '../components/PostExerciseMoodDialog';
 import { useSessionStore } from '../store/sessionStore';
 import type { Exercise, MoodValue } from '../types/breathing';
-import { colors } from '../theme';
+import { useTheme } from '../hooks/useTheme';
+import type { Colors } from '../theme';
 
 type Props = {
   exercise: Exercise;
@@ -19,6 +20,9 @@ export default function BreathingExerciseScreen({ exercise, onBack }: Props) {
 
   const logSession = useSessionStore((s) => s.logSession);
   const [dialogVisible, setDialogVisible] = useState(false);
+
+  const colors = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
 
   const cycleWord = cyclesRemaining === 1 ? 'cycle' : 'cycles';
 
@@ -110,7 +114,7 @@ export default function BreathingExerciseScreen({ exercise, onBack }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   container: {
     flex: 1,
   },

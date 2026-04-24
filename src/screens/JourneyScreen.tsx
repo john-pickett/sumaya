@@ -5,12 +5,13 @@ import { Calendar } from 'react-native-calendars';
 import { useSessionStore } from '../store/sessionStore';
 import type { MoodValue, SessionLog, MeditationLog } from '../types/breathing';
 import { calculateStreaks, toLocalDateKey } from '../utils/streaks';
-import { colors } from '../theme';
+import { useTheme } from '../hooks/useTheme';
+import type { Colors } from '../theme';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const DOT_MEDITATION = { key: 'meditation', color: colors.dotMeditation };
-const DOT_BREATHING = { key: 'breathing', color: colors.dotBreathing };
+const DOT_MEDITATION = { key: 'meditation', color: '#4CAF50' };
+const DOT_BREATHING = { key: 'breathing', color: '#F9A825' };
 
 const MOOD_EMOJI: Record<MoodValue, string> = {
   awful: '😩', bad: '😔', meh: '😐', good: '🙂', great: '😊', amazing: '🤩',
@@ -18,23 +19,6 @@ const MOOD_EMOJI: Record<MoodValue, string> = {
 
 const MOOD_LABEL: Record<MoodValue, string> = {
   awful: 'awful', bad: 'bad', meh: 'meh', good: 'good', great: 'great', amazing: 'amazing',
-};
-
-const calendarTheme = {
-  calendarBackground: colors.card,
-  textSectionTitleColor: colors.textSecondary,
-  selectedDayBackgroundColor: colors.accent,
-  selectedDayTextColor: colors.white,
-  todayTextColor: colors.accent,
-  dayTextColor: colors.textPrimary,
-  textDisabledColor: colors.borderLight,
-  arrowColor: colors.accent,
-  monthTextColor: colors.textPrimary,
-  textMonthFontWeight: '700' as const,
-  textDayHeaderFontWeight: '600' as const,
-  textDayFontSize: 15,
-  textMonthFontSize: 17,
-  textDayHeaderFontSize: 12,
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -107,6 +91,26 @@ export default function JourneyScreen() {
   const sessions = useSessionStore((s) => s.sessions);
   const meditationSessions = useSessionStore((s) => s.meditationSessions);
 
+  const colors = useTheme();
+  const styles = useMemo(() => makeStyles(colors), [colors]);
+
+  const calendarTheme = useMemo(() => ({
+    calendarBackground: colors.card,
+    textSectionTitleColor: colors.textSecondary,
+    selectedDayBackgroundColor: colors.accent,
+    selectedDayTextColor: colors.white,
+    todayTextColor: colors.accent,
+    dayTextColor: colors.textPrimary,
+    textDisabledColor: colors.borderLight,
+    arrowColor: colors.accent,
+    monthTextColor: colors.textPrimary,
+    textMonthFontWeight: '700' as const,
+    textDayHeaderFontWeight: '600' as const,
+    textDayFontSize: 15,
+    textMonthFontSize: 17,
+    textDayHeaderFontSize: 12,
+  }), [colors]);
+
   const streakData = useMemo(() => calculateStreaks(meditationSessions), [meditationSessions]);
 
   const meditationStats = useMemo(() => {
@@ -162,7 +166,7 @@ export default function JourneyScreen() {
     result[today] = { ...result[today], selected: true, selectedColor: colors.accent };
 
     return result;
-  }, [sessions, meditationSessions]);
+  }, [sessions, meditationSessions, colors.accent]);
 
   const dayEntries = useMemo((): DayEntry[] => {
     if (!selectedDate) return [];
@@ -272,7 +276,7 @@ export default function JourneyScreen() {
           )}
           <View style={styles.calendarCard}>
             <Calendar
-              key={visibleMonth}
+              key={`${visibleMonth}-${colors.background}`}
               current={visibleMonth}
               markingType="multi-dot"
               markedDates={markedDates}
@@ -375,7 +379,7 @@ export default function JourneyScreen() {
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
