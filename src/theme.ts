@@ -19,6 +19,7 @@ export type Colors = {
   dotBreathing: string;
 };
 
+
 export const lightColors: Colors = {
   // ── Brand ─────────────────────────────────────────────────────────────────
   accent: '#7B68B5',
