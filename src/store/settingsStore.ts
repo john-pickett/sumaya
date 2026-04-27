@@ -21,11 +21,17 @@ interface SettingsState {
   setNotificationPromptShown: (shown: boolean) => void;
   notificationTime: NotificationTime | null;
   setNotificationTime: (t: NotificationTime | null) => void;
+  qualifyingMeditationCount: number;
+  incrementQualifyingMeditation: () => number;
+  reviewPromptLastShownAt: number | null;
+  setReviewPromptLastShownAt: (n: number) => void;
+  reviewPromptAccepted: boolean;
+  setReviewPromptAccepted: (accepted: boolean) => void;
 }
 
 export const useSettingsStore = create<SettingsState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       themeId: 'system',
       setThemeId: (id) => set({ themeId: id }),
       selectedChimeId: 'crystal',
@@ -36,6 +42,16 @@ export const useSettingsStore = create<SettingsState>()(
       setNotificationPromptShown: (shown) => set({ notificationPromptShown: shown }),
       notificationTime: null,
       setNotificationTime: (t) => set({ notificationTime: t }),
+      qualifyingMeditationCount: 0,
+      incrementQualifyingMeditation: () => {
+        const next = get().qualifyingMeditationCount + 1;
+        set({ qualifyingMeditationCount: next });
+        return next;
+      },
+      reviewPromptLastShownAt: null,
+      setReviewPromptLastShownAt: (n) => set({ reviewPromptLastShownAt: n }),
+      reviewPromptAccepted: false,
+      setReviewPromptAccepted: (accepted) => set({ reviewPromptAccepted: accepted }),
     }),
     {
       name: 'settings-store',
