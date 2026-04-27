@@ -11,11 +11,11 @@
     "bump:minor": "node bump-version.js minor && npm run commit:version",
     "bump:major": "node bump-version.js major && npm run commit:version",
     "start:dev": "APP_VARIANT=development expo start --dev-client",
-    "build:dev:ios": "npm run bump && APP_VARIANT=development eas build --profile development --platform ios --local",
-    "build:dev:android": "APP_VARIANT=development eas build --profile development --platform android --local",
-    "build:dev:ios:sim": "APP_VARIANT=development eas build --profile development-simulator --platform ios --local",
-    "build:ios": "npm run bump && eas build --profile production --platform ios --local",
-    "build:android": "eas build --profile production --platform android --local",
+    "build:ios": "npm run bump && APP_VARIANT=development eas build --profile development --platform ios --local",
+    "build:android": "APP_VARIANT=development eas build --profile development --platform android --local",
+    "build:ios:sim": "APP_VARIANT=development eas build --profile development-simulator --platform ios --local",
+    "build:ios:prod": "npm run bump && eas build --profile production --platform ios --local",
+    "build:android:prod": "eas build --profile production --platform android --local",
     "commit:version": "git add package.json app.json && git commit -m \"chore: bump to $(node -p \"require('./package.json').version\")\""
   },
   "dependencies": {
