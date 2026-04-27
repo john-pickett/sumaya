@@ -3,8 +3,8 @@ import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Circle } from 'react-native-svg';
 import * as Notifications from 'expo-notifications';
-import * as StoreReview from 'expo-store-review';
 import { useMeditationTimer } from '../hooks/useMeditationTimer';
+import { useReviewPrompt } from '../hooks/useReviewPrompt';
 import { requestNotificationPermission } from '../hooks/usePushNotifications';
 import PostExerciseMoodDialog from '../components/PostExerciseMoodDialog';
 import HowToMeditateModal from '../components/HowToMeditateModal';
@@ -41,8 +41,7 @@ export default function MeditateScreen() {
   const [infoVisible, setInfoVisible] = useState(false);
   const [notifReminderVisible, setNotifReminderVisible] = useState(false);
   const [notifTimePickerVisible, setNotifTimePickerVisible] = useState(false);
-  const [reviewModalVisible, setReviewModalVisible] = useState(false);
-  const [reviewModalShownAt, setReviewModalShownAt] = useState<number | null>(null);
+  const reviewPrompt = useReviewPrompt();
 
   const colors = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
@@ -56,10 +55,6 @@ export default function MeditateScreen() {
   const notificationPromptShown = useSettingsStore((s) => s.notificationPromptShown);
   const setNotificationPromptShown = useSettingsStore((s) => s.setNotificationPromptShown);
   const setNotificationTime = useSettingsStore((s) => s.setNotificationTime);
-  const incrementQualifyingMeditation = useSettingsStore((s) => s.incrementQualifyingMeditation);
-  const reviewPromptAccepted = useSettingsStore((s) => s.reviewPromptAccepted);
-  const setReviewPromptAccepted = useSettingsStore((s) => s.setReviewPromptAccepted);
-  const setReviewPromptLastShownAt = useSettingsStore((s) => s.setReviewPromptLastShownAt);
 
   useEffect(() => {
     if (status === 'done') setDialogVisible(true);
@@ -82,18 +77,7 @@ export default function MeditateScreen() {
       postMood: mood,
     });
     setDialogVisible(false);
-
-    const isQualifying = mood === 'good' || mood === 'great' || mood === 'amazing';
-    if (isQualifying && !reviewPromptAccepted) {
-      const newCount = incrementQualifyingMeditation();
-      const shouldShow = newCount === 2 || (newCount > 2 && (newCount - 2) % 5 === 0);
-      if (shouldShow) {
-        setReviewModalShownAt(newCount);
-        setTimeout(() => setReviewModalVisible(true), 300);
-        return;
-      }
-    }
-
+    if (reviewPrompt.maybeTrigger(mood)) return;
     checkAndMaybePrompt(wasFirstSession);
   }
 
@@ -127,24 +111,6 @@ export default function MeditateScreen() {
 
   function handleTimeSkipped() {
     setNotifTimePickerVisible(false);
-  }
-
-  async function handleReviewYes() {
-    if (reviewModalShownAt !== null) setReviewPromptLastShownAt(reviewModalShownAt);
-    setReviewPromptAccepted(true);
-    setReviewModalVisible(false);
-    try {
-      if (await StoreReview.hasAction()) {
-        await StoreReview.requestReview();
-      }
-    } catch {
-      // no-op: requestReview is best-effort
-    }
-  }
-
-  function handleReviewNo() {
-    if (reviewModalShownAt !== null) setReviewPromptLastShownAt(reviewModalShownAt);
-    setReviewModalVisible(false);
   }
 
   const strokeDashoffset = progress.interpolate({
@@ -186,9 +152,9 @@ export default function MeditateScreen() {
           onSkip={handleTimeSkipped}
         />
         <ReviewPromptModal
-          visible={reviewModalVisible}
-          onYes={handleReviewYes}
-          onNo={handleReviewNo}
+          visible={reviewPrompt.visible}
+          onYes={reviewPrompt.onYes}
+          onNo={reviewPrompt.onNo}
         />
       </SafeAreaView>
     );

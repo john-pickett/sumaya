@@ -4,7 +4,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useBreathingAnimation } from '../hooks/useBreathingAnimation';
 import BreathingShape from '../components/BreathingShape';
 import PostExerciseMoodDialog from '../components/PostExerciseMoodDialog';
+import ReviewPromptModal from '../components/ReviewPromptModal';
 import { useSessionStore } from '../store/sessionStore';
+import { useReviewPrompt } from '../hooks/useReviewPrompt';
 import type { Exercise, MoodValue } from '../types/breathing';
 import { useTheme } from '../hooks/useTheme';
 import type { Colors } from '../theme';
@@ -20,6 +22,7 @@ export default function BreathingExerciseScreen({ exercise, onBack }: Props) {
 
   const logSession = useSessionStore((s) => s.logSession);
   const [dialogVisible, setDialogVisible] = useState(false);
+  const reviewPrompt = useReviewPrompt();
 
   const colors = useTheme();
   const styles = useMemo(() => makeStyles(colors), [colors]);
@@ -41,6 +44,7 @@ export default function BreathingExerciseScreen({ exercise, onBack }: Props) {
       postExerciseMood: mood,
     });
     setDialogVisible(false);
+    reviewPrompt.maybeTrigger(mood);
   }
 
   function handleSkip() {
@@ -109,6 +113,11 @@ export default function BreathingExerciseScreen({ exercise, onBack }: Props) {
         accentColor={exercise.color}
         onSelect={handleMoodSelect}
         onSkip={handleSkip}
+      />
+      <ReviewPromptModal
+        visible={reviewPrompt.visible}
+        onYes={reviewPrompt.onYes}
+        onNo={reviewPrompt.onNo}
       />
     </SafeAreaView>
   );
